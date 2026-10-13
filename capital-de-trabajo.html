@@ -265,9 +265,10 @@ function hbarChart(host,items,fmt){
   const BI=1.556; const rr=(v,idx)=>v==null?null:Math.round(v*BI/idx); // deflactar a ago-26
   const dinv=RAW.map(r=>rr(r.inv,r.idx)), dcxc=RAW.map(r=>rr(r.cxc,r.idx)),
         dcxp=RAW.map(r=>rr(r.cxp,r.idx)), dotr=RAW.map(r=>rr(r.otros,r.idx));
-  legend(lg2a,[{t:"Inventario",c:css("--k-1"),line:1},{t:"Créditos x ventas",c:css("--k-3"),line:1},{t:"Otros",c:css("--k-4"),line:1},{t:"Deudas comerciales",c:css("--k-2"),line:1}]);
+  const dtot=RAW.map((r,i)=>dinv[i]+dcxc[i]+dcxp[i]+dotr[i]);
+  legend(lg2a,[{t:"Capital de trabajo (total)",c:css("--k-5"),line:1},{t:"Inventario",c:css("--k-1"),line:1},{t:"Créditos x ventas",c:css("--k-3"),line:1},{t:"Otros",c:css("--k-4"),line:1},{t:"Deudas comerciales",c:css("--k-2"),line:1}]);
   comboChart(c2a,{labels:RAW.map(r=>lbl(r.m)),
-    lines:[{data:dinv,color:css("--k-1")},{data:dcxc,color:css("--k-3")},{data:dotr,color:css("--k-4")},{data:dcxp,color:css("--k-2")}],
+    lines:[{data:dtot,color:css("--k-5"),w:3.4,r:3},{data:dinv,color:css("--k-1")},{data:dcxc,color:css("--k-3")},{data:dotr,color:css("--k-4")},{data:dcxp,color:css("--k-2")}],
     yfmt:v=>"$"+(v/1000).toFixed(0)+"k",tip:v=>money(v)+" M"});
   const g=(a,arr)=>arr[RAW.findIndex(r=>r.m=="2026-08")]/arr[RAW.findIndex(r=>r.m==a)]-1;
   const gi=g("2025-10",dinv),gc=g("2025-10",dcxc),gp=g("2025-10",dcxp),go=g("2025-10",dotr);
