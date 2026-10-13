@@ -293,11 +293,10 @@ function hbarChart(host,items,fmt){
 /* ---------- S1 obsolescencia (aging del stock) ---------- */
 (function(){
   const L=OBS.map(o=>lbl(o.m));
-  legend(lg1,[{t:"Rotación (sano)",c:css("--k-3")},{t:"Sobrestock trimestral (aceptable)",c:css("--k-1")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Dormido",c:css("--warn")},{t:"Muerto",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
+  legend(lg1,[{t:"Rotación + trim. (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Dormido",c:css("--warn")},{t:"Muerto",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
   stackComboChart(c1,{labels:L,
     stacks:[
-      {name:"Rotación (sano)",color:css("--k-3"),data:OBS.map(o=>o.rot)},
-      {name:"Sobrestock trimestral",color:css("--k-1"),data:OBS.map(o=>o.trim)},
+      {name:"Rotación + trim. (sano)",color:css("--k-3"),data:OBS.map(o=>o.rot+o.trim)},
       {name:"Sobrestock semestral",color:css("--k-4"),data:OBS.map(o=>o.sem)},
       {name:"Dormido",color:css("--warn"),data:OBS.map(o=>o.dormido)},
       {name:"Muerto",color:css("--bad"),data:OBS.map(o=>o.muerto)},
