@@ -314,9 +314,9 @@ function hbarChart(host,items,fmt){
 
   /* --- Hoy vs. objetivo 2027 (por categoría, % del stock) --- */
   const pc=v=>v/now.stock*100;
-  const cats=["Muerto","Dormido","Sob. semestral","Sob. trimestral","Rotación"];
-  const hoy=[pc(now.muerto),pc(now.dormido),pc(now.sem),pc(now.trim),pc(now.rot)];
-  const obj2027=[5,3,10,15,67]; // PROVISORIO: objetivo de la planilla; reemplazar por metas 2027
+  const cats=["Muerto","Dormido","Sob. semestral","Rotación + trim. (sano)"];
+  const hoy=[pc(now.muerto),pc(now.dormido),pc(now.sem),pc(now.rot+now.trim)];
+  const obj2027=[5,3,10,82]; // PROVISORIO: objetivo de la planilla (rotación 67 + trim 15); reemplazar por metas 2027
   legend(lg1b,[{t:"Hoy (oct‑26)",c:css("--k-2")},{t:"Objetivo 2027 (provisorio)",c:css("--k-3")}]);
   groupedBars(c1b,{cats,fmt:v=>v.toFixed(0)+"%",
     series:[{name:"Hoy (oct‑26)",color:css("--k-2"),data:hoy},
