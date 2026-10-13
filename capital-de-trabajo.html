@@ -86,14 +86,14 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
   <div class=period-badge>Serie <b>ene&nbsp;2025 – ago&nbsp;2026</b> · $ millones</div>
 </header>
 
-<div class=note><span>ℹ️</span><div><b>Alcance y datos.</b> Cifras en <b>$ millones</b>. Universo: <b>Posventa Global</b> (repuestos, taller, siniestros, accesorios) — no incluye 0&nbsp;km. Los valores <b>reales</b> se deflactan con el índice de precios de lista (promedio marcas AUTOCITY, base&nbsp;ago‑26). <b>feb/mar/may‑2026</b> tienen facturación/margen de archivos preliminares (marcas incompletas): se excluyen de ventas/margen, pero su capital de trabajo es completo. La Previsión por Obsolescencia es el cargo/reversa mensual a resultados (no el saldo). No fue posible acceder a <span class=mono>localhost:8501</span> (corre en otra máquina); la obsolescencia se tomó de los cuadros.</div></div>
+<div class=note><span>ℹ️</span><div><b>Alcance y datos.</b> Cifras en <b>$ millones</b>. Universo: <b>Posventa Global</b> (repuestos, taller, siniestros, accesorios) — no incluye 0&nbsp;km. Los valores <b>reales</b> se deflactan con el índice de precios de lista (promedio marcas AUTOCITY, base&nbsp;ago‑26). <b>feb/mar/may‑2026</b> tienen facturación/margen de archivos preliminares (marcas incompletas): se excluyen de ventas/margen, pero su capital de trabajo es completo. La <b>obsolescencia</b> (sección&nbsp;1) mide la composición por antigüedad/rotación del stock de repuestos a costo (total Autocity), tomada de la planilla de aging por marca; oct‑26 es parcial (al 6/10).</div></div>
 
 <div class=kpis id=kpis></div>
 
 <section>
-  <div class=snum>01 — Evolución de la Previsión</div>
-  <h2>Previsión por Obsolescencia · variación mes a mes</h2>
-  <p class=lead>Cargo (−) o reversa (+) mensual imputado a resultados por obsolescencia de stock, desde octubre&nbsp;2025. La barra es el impacto del mes; la línea, el acumulado del período.</p>
+  <div class=snum>01 — Evolución de la Obsolescencia</div>
+  <h2>Obsolescencia del stock de repuestos · ene 2026 → hoy</h2>
+  <p class=lead>Composición del stock de repuestos a costo (total Autocity) por antigüedad y rotación: stock muerto, dormido y sobrestock (problemático) frente al stock de rotación (sano). La línea es el % de stock problemático sobre el total.</p>
   <div class=legend id=lg1></div>
   <div class=chartbox id=c1></div>
   <ul class=takeaways id=t1></ul>
@@ -154,6 +154,19 @@ const RAW=[
  {m:'2026-07',wc:12367,inv:12017,cxc:4052,cxp:-4960,otros:1258,obsol:93,resn:935,vta:4733,mg:1868,idx:1.533,wcreal:12553,vtareal:4804,mgreal:1896,comp:true},
  {m:'2026-08',wc:13962,inv:13638,cxc:3681,cxp:-4683,otros:1326,obsol:-216,resn:485,vta:4523,mg:1896,idx:1.556,wcreal:13962,vtareal:4523,mgreal:1896,comp:true},
 ];
+// Obsolescencia: aging del stock de repuestos a costo ($ millones, total AUTOCITY). Fuente: planilla aging por marca.
+const OBS=[
+ {m:"2026-01",muerto:590,dormido:291,sem:1987,trim:1158,rot:5230,stock:9255},
+ {m:"2026-02",muerto:585,dormido:293,sem:2190,trim:1160,rot:5483,stock:9711},
+ {m:"2026-03",muerto:621,dormido:286,sem:2204,trim:1047,rot:6235,stock:10393},
+ {m:"2026-04",muerto:669,dormido:284,sem:2478,trim:1055,rot:6536,stock:11022},
+ {m:"2026-05",muerto:729,dormido:276,sem:2009,trim:885,rot:7593,stock:11492},
+ {m:"2026-06",muerto:696,dormido:184,sem:2198,trim:666,rot:7386,stock:11131},
+ {m:"2026-07",muerto:786,dormido:135,sem:2047,trim:563,rot:7970,stock:11500},
+ {m:"2026-08",muerto:881,dormido:61,sem:1848,trim:438,rot:8238,stock:11466},
+ {m:"2026-09",muerto:1016,dormido:351,sem:1978,trim:2369,rot:5796,stock:11509},
+ {m:"2026-10",muerto:912,dormido:442,sem:2760,trim:2147,rot:5883,stock:12156},
+].map(o=>{o.obsol=o.muerto+o.dormido+o.sem+o.trim;o.pct=o.obsol/o.stock*100;return o;});
 const ML=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const lbl=m=>{const[y,mo]=m.split("-");return ML[+mo-1]+" '"+y.slice(2);};
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -204,6 +217,21 @@ function comboChart(host,cfg){ // bars (per cat, by sign color or fixed) + lines
     l.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:yf(v),r:l.r||2.6,fill:l.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${(l.tip||cfg.tip||(x=>x))(v)}`;svg.appendChild(p);});});
   host.appendChild(svg);
 }
+function stackComboChart(host,cfg){ // barras apiladas + línea en eje derecho
+  host.innerHTML="";const{w,h}=dims(host);const P={l:50,r:48,t:10,b:24,w,h};
+  const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
+  const labels=cfg.labels;const{bw,cx}=cats(svg,P,labels);
+  let mx=0;labels.forEach((_,i)=>{let s=0;cfg.stacks.forEach(st=>s+=st.data[i]||0);mx=Math.max(mx,s);});
+  const s1=niceScale(0,mx,5),Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
+  const lv=cfg.line.data.filter(v=>v!=null),s2=niceScale(0,Math.max(...lv),5);
+  const Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));
+  axes(svg,P,{ticks:s1.ticks,Y,Y2,t2:s2},{ticks:s1.ticks,fmt:cfg.yfmt,x2:cfg.y2fmt});
+  labels.forEach((_,i)=>{let acc=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;const y0=Y(acc),y1=Y(acc+v);acc+=v;const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});});
+  let d="";cfg.line.data.forEach((v,i)=>{if(v==null)return;d+=(d?"L":"M")+cx(i)+" "+Y2(v)+" ";});
+  svg.appendChild(E("path",{d,fill:"none",stroke:cfg.line.color,"stroke-width":3,"stroke-linejoin":"round"}));
+  cfg.line.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:Y2(v),r:3.2,fill:cfg.line.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${v.toFixed(1)}%`;svg.appendChild(p);});
+  host.appendChild(svg);
+}
 function stackedChart(host,cfg){
   host.innerHTML="";const{w,h}=dims(host);const P={l:50,r:14,t:10,b:24,w,h};
   const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
@@ -242,21 +270,26 @@ function hbarChart(host,items,fmt){
   kpis.innerHTML=k.map(x=>`<div class=kpi><div class=lbl>${x.lbl}</div><div class="val mono">${x.val}</div><div class="delta ${x.cls}">${x.d}</div></div>`).join("");
 })();
 
-/* ---------- S1 obsolescencia ---------- */
+/* ---------- S1 obsolescencia (aging del stock) ---------- */
 (function(){
-  let acc=0;const cum=WIN.map(r=>acc+=r.obsol);
-  legend(lg1,[{t:"Cargo/reversa del mes",c:css("--slate")},{t:"Acumulado del período",c:css("--accent"),line:1}]);
-  comboChart(c1,{labels:WIN.map(r=>lbl(r.m)),
-    bars:[{data:WIN.map(r=>r.obsol)}],
-    lines:[{data:cum,color:css("--accent")}],
-    yfmt:v=>"$"+v,tip:v=>money(v)+" M"});
-  const chg=WIN.filter(r=>r.obsol!=null);
-  const worst=chg.reduce((a,b)=>b.obsol<a.obsol?b:a),bestv=chg.reduce((a,b)=>b.obsol>a.obsol?b:a);
+  const L=OBS.map(o=>lbl(o.m));
+  legend(lg1,[{t:"Rotación (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Sobrestock trimestral",c:css("--warn")},{t:"Dormido",c:css("--k-2")},{t:"Muerto",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
+  stackComboChart(c1,{labels:L,
+    stacks:[
+      {name:"Rotación (sano)",color:css("--k-3"),data:OBS.map(o=>o.rot)},
+      {name:"Sobrestock semestral",color:css("--k-4"),data:OBS.map(o=>o.sem)},
+      {name:"Sobrestock trimestral",color:css("--warn"),data:OBS.map(o=>o.trim)},
+      {name:"Dormido",color:css("--k-2"),data:OBS.map(o=>o.dormido)},
+      {name:"Muerto",color:css("--bad"),data:OBS.map(o=>o.muerto)},
+    ],
+    line:{data:OBS.map(o=>o.pct),color:css("--ink")},
+    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",y2fmt:v=>v+"%"});
+  const g=OBS.find(o=>o.m=="2026-01"),best=OBS.find(o=>o.m=="2026-08"),now=OBS[OBS.length-1];
   t1.innerHTML=[
-    ["neg",`Cargo neto acumulado del período de <b>${money(cum[cum.length-1])} M</b> por obsolescencia (oct '25 → ago '26): drena resultados de forma sostenida.`],
-    ["neg",`Mayor cargo en <b>${lbl(worst.m)}</b> (${money(worst.obsol)} M), seguido por ene '26 (-$251 M) y ago '26 (-$216 M).`],
-    ["pos",`Reversas en <b>${lbl(bestv.m)}</b> (+$${bestv.obsol} M) y may '26 (+$126 M) dieron alivio puntual, sin revertir la tendencia.`],
-    ["neu",`Fuerte volatilidad mensual: señal de stock que envejece a la par de la expansión del inventario.`],
+    ["pos",`La obsolescencia <b>mejoró de ${g.pct.toFixed(0)}% (ene) a ${best.pct.toFixed(0)}% (ago '26)</b>: ocho meses de saneamiento, con el stock problemático cayendo de ${money(g.obsol)} M a su mínimo de ${money(best.obsol)} M.`],
+    ["neg",`<b>En sep‑oct se revirtió de golpe: saltó a ${OBS.find(o=>o.m=="2026-09").pct.toFixed(0)}%–${now.pct.toFixed(0)}%</b> del stock, borrando todo el avance del año.`],
+    ["neg",`El salto se concentra en <b>sobrestock trimestral</b> (de ${money(best.trim)} M en ago a ${money(now.trim)} M) y en la <b>caída de la rotación</b> (de ${money(best.rot)} M a ${money(now.rot)} M).`],
+    ["neu",`Hoy ~<b>${money(now.obsol)} M</b> de stock de repuestos es problemático (muerto, dormido o sobrestock). Oct‑26 es parcial (al 6/10) e incorpora la marca LEAP.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
