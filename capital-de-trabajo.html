@@ -183,7 +183,7 @@ const OBS=[
  {m:"2026-08",muerto:881,dormido:61,sem:1848,trim:438,rot:8238,stock:11466},
  {m:"2026-09",muerto:1016,dormido:351,sem:1978,trim:2369,rot:5796,stock:11509},
  {m:"2026-10",muerto:912,dormido:442,sem:2760,trim:2147,rot:5883,stock:12156},
-].map(o=>{o.obsol=o.muerto+o.dormido+o.sem;o.pct=o.obsol/o.stock*100;return o;});
+].map(o=>{o.obsoleto=o.muerto+o.dormido;o.obsol=o.muerto+o.dormido+o.sem;o.pct=o.obsol/o.stock*100;return o;});
 const ML=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const lbl=m=>{const[y,mo]=m.split("-");return ML[+mo-1]+" '"+y.slice(2);};
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -238,12 +238,12 @@ function stackComboChart(host,cfg){ // barras apiladas + línea en eje derecho
   host.innerHTML="";const{w,h}=dims(host);const P={l:50,r:48,t:10,b:24,w,h};
   const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
   const labels=cfg.labels;const{bw,cx}=cats(svg,P,labels);
-  let mx=0;labels.forEach((_,i)=>{let s=0;cfg.stacks.forEach(st=>s+=st.data[i]||0);mx=Math.max(mx,s);});
-  const s1=niceScale(0,mx,5),Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
+  let mx=0,mn=0;labels.forEach((_,i)=>{let p=0,n=0;cfg.stacks.forEach(st=>{const v=st.data[i]||0;if(v>=0)p+=v;else n+=v;});mx=Math.max(mx,p);mn=Math.min(mn,n);});
+  const s1=niceScale(mn,mx,5),Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
   const lv=cfg.line.data.filter(v=>v!=null),s2=niceScale(0,Math.max(...lv),5);
   const Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));
   axes(svg,P,{ticks:s1.ticks,Y,Y2,t2:s2},{ticks:s1.ticks,fmt:cfg.yfmt,x2:cfg.y2fmt});
-  labels.forEach((_,i)=>{let acc=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;const y0=Y(acc),y1=Y(acc+v);acc+=v;const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});});
+  labels.forEach((_,i)=>{let accP=0,accN=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});});
   let d="";cfg.line.data.forEach((v,i)=>{if(v==null)return;d+=(d?"L":"M")+cx(i)+" "+Y2(v)+" ";});
   svg.appendChild(E("path",{d,fill:"none",stroke:cfg.line.color,"stroke-width":3,"stroke-linejoin":"round"}));
   cfg.line.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:Y2(v),r:3.2,fill:cfg.line.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${v.toFixed(1)}%`;svg.appendChild(p);});
@@ -306,13 +306,12 @@ function hbarChart(host,items,fmt){
 /* ---------- S1 obsolescencia (aging del stock) ---------- */
 (function(){
   const L=OBS.map(o=>lbl(o.m));
-  legend(lg1,[{t:"Rotación + trim. (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Dormido",c:css("--warn")},{t:"Muerto",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
+  legend(lg1,[{t:"Rotación + trim. (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Obsoleto (muerto + dormido)",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
   stackComboChart(c1,{labels:L,
     stacks:[
       {name:"Rotación + trim. (sano)",color:css("--k-3"),data:OBS.map(o=>o.rot+o.trim)},
       {name:"Sobrestock semestral",color:css("--k-4"),data:OBS.map(o=>o.sem)},
-      {name:"Dormido",color:css("--warn"),data:OBS.map(o=>o.dormido)},
-      {name:"Muerto",color:css("--bad"),data:OBS.map(o=>o.muerto)},
+      {name:"Obsoleto (muerto + dormido)",color:css("--bad"),data:OBS.map(o=>o.obsoleto)},
     ],
     line:{data:OBS.map(o=>o.pct),color:css("--ink")},
     yfmt:v=>"$"+(v/1000).toFixed(0)+"k",y2fmt:v=>v+"%"});
@@ -326,9 +325,9 @@ function hbarChart(host,items,fmt){
 
   /* --- Hoy vs. objetivo 2027 (por categoría, % del stock) --- */
   const pc=v=>v/now.stock*100;
-  const cats=["Muerto","Dormido","Sob. semestral","Rotación + trim. (sano)"];
-  const hoy=[pc(now.muerto),pc(now.dormido),pc(now.sem),pc(now.rot+now.trim)];
-  const obj2027=[5,3,10,82]; // PROVISORIO: objetivo de la planilla (rotación 67 + trim 15); reemplazar por metas 2027
+  const cats=["Obsoleto","Sob. semestral","Rotación + trim. (sano)"];
+  const hoy=[pc(now.muerto+now.dormido),pc(now.sem),pc(now.rot+now.trim)];
+  const obj2027=[8,10,82]; // PROVISORIO: objetivo de la planilla (obsoleto 5+3, sem 10, sano rot 67 + trim 15); reemplazar por metas 2027
   legend(lg1b,[{t:"Hoy (oct‑26)",c:css("--k-2")},{t:"Objetivo 2027 (provisorio)",c:css("--k-3")}]);
   groupedBars(c1b,{cats,fmt:v=>v.toFixed(0)+"%",
     series:[{name:"Hoy (oct‑26)",color:css("--k-2"),data:hoy},
@@ -403,31 +402,29 @@ function hbarChart(host,items,fmt){
 /* ---------- S4 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
 (function(){
   const L=["mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
-  const AR=[
-    {a:"Repuestos CBA",c:css("--k-1"),res:[242,225,54,215,232,248],pct:[9.3,9.8,2.1,8.1,9.1,9.9]},
-    {a:"Taller CBA",c:css("--k-3"),res:[279,234,119,214,178,293],pct:[10.7,10.1,4.7,8.1,7.0,11.7]},
-    {a:"Accesorios",c:css("--k-4"),res:[97,98,83,88,67,48],pct:[3.7,4.3,3.3,3.3,2.6,1.9]},
-    {a:"Siniestros",c:css("--k-2"),res:[-26,37,38,77,79,83],pct:[-1.0,1.6,1.5,2.9,3.1,3.3]},
-    {a:"Taller interior",c:css("--k-5"),res:[70,48,46,-28,102,32],pct:[2.7,2.1,1.8,-1.0,4.0,1.3]},
-    {a:"Repuestos interior",c:css("--warn"),res:[-5,-17,-14,-16,9,0],pct:[-0.2,-0.7,-0.5,-0.6,0.4,0.0]},
-  ];
+  // Bienes = Repuestos CBA + Repuestos interior + Accesorios ; Servicios = Taller CBA + Taller interior + Siniestros
+  const bienesRes=[334,306,123,287,308,296], servRes=[323,319,203,263,359,408], stockRes=[317,131,260,36,267,-218];
+  const bienesPct=[6.4,4.4,1.6,3.6,6.0,5.9], servPct=[4.1,4.6,2.7,3.2,4.7,5.5];
   const CT=[10479,11189,11995,12687,12367,13962];      // capital de trabajo total
   const RESN=[973,757,586,587,935,485];                 // resultado neto total
-  legend(lg5,AR.map(x=>({t:x.a,c:x.c})).concat([{t:"Capital de trabajo (total)",c:css("--ink"),line:1}]));
+  const cB=css("--k-1"),cS=css("--k-3"),cK=css("--k-4");
+  legend(lg5,[{t:"Bienes (repuestos + accesorios)",c:cB},{t:"Servicios (taller + siniestros)",c:cS},{t:"Resultados de stock",c:cK},{t:"Capital de trabajo (total)",c:css("--ink"),line:1}]);
   stackComboChart(c5a,{labels:L,
-    stacks:AR.map(x=>({name:x.a,color:x.c,data:x.res})),
+    stacks:[{name:"Bienes (rep + accesorios)",color:cB,data:bienesRes},
+            {name:"Servicios (taller + siniestros)",color:cS,data:servRes},
+            {name:"Resultados de stock",color:cK,data:stockRes}],
     line:{data:CT,color:css("--ink")},
     yfmt:v=>"$"+v, y2fmt:v=>"$"+(v/1000).toFixed(0)+"k"});
-  legend(lg5b,AR.map(x=>({t:x.a,c:x.c,line:1})));
+  legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1}]);
   comboChart(c5b,{labels:L,
-    lines:AR.map(x=>({data:x.pct,color:x.c,w:2,r:2})),
+    lines:[{data:bienesPct,color:cB,w:2.5,r:2.5},{data:servPct,color:cS,w:2.5,r:2.5}],
     yfmt:v=>v+"%",tip:v=>v.toFixed(1)+"%"});
   const row=(i)=>(RESN[i]/CT[i]*100);
   t5.innerHTML=[
     ["neg",`Mientras el <b>capital de trabajo subió de $10.479 M (mar) a $13.962 M (ago)</b>, el resultado neto cayó de $973 M a $485 M: la <b>rentabilidad sobre el capital bajó de ${row(0).toFixed(1)}% a ${row(5).toFixed(1)}%</b>.`],
-    ["neu",`<b>Repuestos CBA</b> y <b>Taller CBA</b> sostienen el resultado todos los meses y son los más rentables (~8–12%); juntos explican la mayor parte del resultado mensual.`],
-    ["neg",`<b>Accesorios</b> cae mes a mes (3,7% → 1,9%) pese a inmovilizar inventario, y <b>Repuestos interior</b> está en rojo casi todos los meses: capital de stock poco rentable.`],
-    ["pos",`<b>Siniestros</b> mejora de forma sostenida (de −1,0% a 3,3%); <b>Taller interior</b> es volátil y de bajo aporte.`],
+    ["neu",`<b>Bienes</b> (repuestos + accesorios) y <b>Servicios</b> (taller + siniestros) rinden parejo (~4–6% sobre ventas); <b>Servicios pasó a aportar más resultado que Bienes en jul–ago</b>.`],
+    ["neg",`Los <b>Resultados de stock</b> son muy volátiles: sumaron <b>+$317 M en mar</b> pero restaron <b>−$218 M en ago</b>, golpeando el resultado del mes.`],
+    ["neu",`El capital (inventario) está concentrado en <b>Bienes</b>; con su rentabilidad en ~5–6% y el capital creciendo, el retorno sobre el stock inmovilizado es el foco a vigilar.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
