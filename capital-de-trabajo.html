@@ -127,7 +127,19 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 </section>
 
 <section>
-  <div class=snum>04 — Conclusión y Diagnóstico Financiero</div>
+  <div class=snum>04 — Rentabilidad por área de posventa</div>
+  <h2>¿Qué áreas generan el resultado y cuáles usan el capital?</h2>
+  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), últimos 6 meses (mar–ago 2026). El capital de trabajo es casi todo <b>inventario</b>: no se abre por área en la fuente, pero se concentra en las áreas que <b>venden stock</b> (repuestos, accesorios) frente a las de <b>servicio</b> (taller, siniestros) — señaladas por color.</p>
+  <div class=legend id=lg5></div>
+  <div class=grid2>
+    <div><div style="font-size:12px;color:var(--slate);margin:2px 0 8px">Resultado acumulado 6 meses ($ millones)</div><div class=chartbox sm id=c5a></div></div>
+    <div><div style="font-size:12px;color:var(--slate);margin:2px 0 8px">Rentabilidad promedio 6 meses (% sobre ventas)</div><div class=chartbox sm id=c5b></div></div>
+  </div>
+  <ul class=takeaways id=t5></ul>
+</section>
+
+<section>
+  <div class=snum>05 — Conclusión y Diagnóstico Financiero</div>
   <h2>¿Fue eficiente la expansión del capital de trabajo?</h2>
   <div class=verdict id=verdict></div>
   <div class=reco id=reco></div>
@@ -384,6 +396,30 @@ function hbarChart(host,items,fmt){
     ["neg",`El <b>margen bruto real</b> también retrocedió ${fpct(pct(c1.mgreal,c0.mgreal))}: la rentabilidad no sostuvo la mayor inversión.`],
     ["neg",`Los <b>meses de stock</b> subieron de ${(base.inv/c0.vta).toFixed(2)} a <b>${(end.inv/c1.vta).toFixed(2)}</b> (indicador independiente de la inflación): deterioro claro de rotación.`],
     ["neu",`El salto nominal (${fpct(pct(end.wc,base.wc))}) sobreestima: ~${fpct(pct(end.wc,base.wc)-pct(end.wcreal,base.wcreal))} del aumento del capital es sólo recomposición por precios.`],
+  ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
+})();
+
+/* ---------- S4 rentabilidad por área de posventa (global, 6 meses) ---------- */
+(function(){
+  // res = resultado acumulado 6m ($ M); pct = rentabilidad promedio 6m (% s/ventas); inv = usa inventario
+  const A=[
+    {a:"Taller CBA",res:1317,pct:8.7,inv:false},
+    {a:"Repuestos CBA",res:1215,pct:8.1,inv:true},
+    {a:"Accesorios",res:481,pct:3.2,inv:true},
+    {a:"Siniestros",res:288,pct:1.9,inv:false},
+    {a:"Taller interior",res:271,pct:1.8,inv:false},
+    {a:"Repuestos interior",res:-43,pct:-0.3,inv:true},
+  ];
+  const colInv=css("--k-2"),colSvc=css("--k-3");
+  const col=x=>x.inv?colInv:colSvc;
+  legend(lg5,[{t:"Vende stock (usa inventario / capital)",c:colInv},{t:"Servicio (poco inventario)",c:colSvc}]);
+  hbarChart(c5a,A.map(x=>({label:x.a,value:x.res,color:col(x)})),v=>money(v));
+  hbarChart(c5b,A.map(x=>({label:x.a,value:x.pct,color:col(x)})),v=>v.toFixed(1)+"%");
+  t5.innerHTML=[
+    ["neu",`<b>Taller CBA ($1.317 M) y Repuestos CBA ($1.215 M)</b> generan el grueso del resultado de posventa (≈70% en 6 meses) y son las áreas más rentables (~8–9%).`],
+    ["neg",`<b>Accesorios</b> inmoviliza inventario (usa capital) pero rinde solo <b>~3%</b>; <b>Repuestos interior</b> directamente pierde (−0,3%): capital de stock con bajo o nulo retorno.`],
+    ["pos",`<b>Taller CBA</b> es la mejor relación rentabilidad/capital: alta rentabilidad y casi sin inventario (es servicio). Siniestros y Taller interior aportan poco (~2%).`],
+    ["neu",`Como el capital de trabajo es casi todo inventario, se concentra en <b>repuestos y accesorios</b>: repuestos CBA justifica ese capital; accesorios es el foco a mejorar (más rotación o menos stock).`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
