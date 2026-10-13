@@ -133,7 +133,7 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
   <div style="font-size:12px;color:var(--slate);margin:2px 0 6px">Resultado por área ($ millones) · <b>línea negra = capital de trabajo total</b> (eje derecho)</div>
   <div class=legend id=lg5></div>
   <div class=chartbox id=c5a></div>
-  <div style="font-size:12px;color:var(--slate);margin:16px 0 6px">Rentabilidad por área (% sobre ventas)</div>
+  <div style="font-size:12px;color:var(--slate);margin:16px 0 6px">Aporte sobre el capital de trabajo (resultado del grupo ÷ capital de trabajo total) · la suma = rentabilidad total sobre el capital</div>
   <div class=legend id=lg5b></div>
   <div class=chartbox id=c5b></div>
   <ul class=takeaways id=t5></ul>
@@ -404,7 +404,6 @@ function hbarChart(host,items,fmt){
   const L=["mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
   // Bienes = Repuestos CBA + Repuestos interior + Accesorios ; Servicios = Taller CBA + Taller interior + Siniestros
   const bienesRes=[334,306,123,287,308,296], servRes=[323,319,203,263,359,408], stockRes=[317,131,260,36,267,-218];
-  const bienesPct=[6.4,4.4,1.6,3.6,6.0,5.9], servPct=[4.1,4.6,2.7,3.2,4.7,5.5];
   const CT=[10479,11189,11995,12687,12367,13962];      // capital de trabajo total
   const RESN=[973,757,586,587,935,485];                 // resultado neto total
   const cB=css("--k-1"),cS=css("--k-3"),cK=css("--k-4");
@@ -415,16 +414,17 @@ function hbarChart(host,items,fmt){
             {name:"Resultados de stock",color:cK,data:stockRes}],
     line:{data:CT,color:css("--ink")},
     yfmt:v=>"$"+v, y2fmt:v=>"$"+(v/1000).toFixed(0)+"k"});
-  legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1}]);
+  const pctCT=arr=>arr.map((v,i)=>+(v/CT[i]*100).toFixed(2));
+  legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1},{t:"Resultados de stock",c:cK,line:1}]);
   comboChart(c5b,{labels:L,
-    lines:[{data:bienesPct,color:cB,w:2.5,r:2.5},{data:servPct,color:cS,w:2.5,r:2.5}],
-    yfmt:v=>v+"%",tip:v=>v.toFixed(1)+"%"});
+    lines:[{data:pctCT(bienesRes),color:cB,w:2.5,r:2.5},{data:pctCT(servRes),color:cS,w:2.5,r:2.5},{data:pctCT(stockRes),color:cK,w:2.5,r:2.5}],
+    yfmt:v=>v+"%",tip:v=>v.toFixed(2)+"%"});
   const row=(i)=>(RESN[i]/CT[i]*100);
   t5.innerHTML=[
     ["neg",`Mientras el <b>capital de trabajo subió de $10.479 M (mar) a $13.962 M (ago)</b>, el resultado neto cayó de $973 M a $485 M: la <b>rentabilidad sobre el capital bajó de ${row(0).toFixed(1)}% a ${row(5).toFixed(1)}%</b>.`],
-    ["neu",`<b>Bienes</b> (repuestos + accesorios) y <b>Servicios</b> (taller + siniestros) rinden parejo (~4–6% sobre ventas); <b>Servicios pasó a aportar más resultado que Bienes en jul–ago</b>.`],
-    ["neg",`Los <b>Resultados de stock</b> son muy volátiles: sumaron <b>+$317 M en mar</b> pero restaron <b>−$218 M en ago</b>, golpeando el resultado del mes.`],
-    ["neu",`El capital (inventario) está concentrado en <b>Bienes</b>; con su rentabilidad en ~5–6% y el capital creciendo, el retorno sobre el stock inmovilizado es el foco a vigilar.`],
+    ["neu",`Medido <b>sobre el capital de trabajo</b>, Bienes y Servicios aportan ~2–3% cada uno por mes; <b>Servicios pasó a aportar más que Bienes en jul–ago</b>.`],
+    ["neg",`Los <b>Resultados de stock</b> son muy volátiles: aportaron <b>+3,0% sobre el capital en mar</b> pero restaron <b>−1,6% en ago</b> (−$218 M), golpeando el retorno del mes.`],
+    ["neu",`El capital (inventario) está concentrado en <b>Bienes</b>; su aporte sobre el capital ronda ~2–3% mensual mientras el capital sigue creciendo: el retorno sobre el stock inmovilizado es el foco a vigilar.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
