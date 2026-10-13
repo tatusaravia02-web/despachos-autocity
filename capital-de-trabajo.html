@@ -102,11 +102,9 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 <section>
   <div class=snum>02 — Desglose del Capital de Trabajo</div>
   <h2>Componentes: Inventario, Créditos, Deudas y Otros</h2>
-  <p class=lead>Apertura por componente (nominal). Se cumple la identidad <span class=mono>Bienes de cambio + Créditos − Deudas comerciales + Otros = Capital de trabajo</span>.</p>
-  <div class=grid2>
-    <div><div class=legend id=lg2a></div><div class=chartbox sm id=c2a></div></div>
-    <div><div class=legend id=lg2b></div><div class=chartbox sm id=c2b></div></div>
-  </div>
+  <p class=lead>Evolución de cada componente en términos <b>reales</b> (deflactado por índice de precios de lista, base ago‑26). Se mantiene la identidad <span class=mono>Inventario + Créditos − Deudas comerciales + Otros = Capital de trabajo</span>.</p>
+  <div class=legend id=lg2a></div>
+  <div class=chartbox id=c2a></div>
   <ul class=takeaways id=t2></ul>
 </section>
 
@@ -262,29 +260,21 @@ function hbarChart(host,items,fmt){
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
-/* ---------- S2a componentes apilados ---------- */
+/* ---------- S2 componentes en términos reales (líneas) ---------- */
 (function(){
-  legend(lg2a,[{t:"Inventario",c:css("--k-1")},{t:"Créditos x ventas",c:css("--k-3")},{t:"Otros",c:css("--k-4")},{t:"Deudas comerciales",c:css("--k-2")}]);
-  stackedChart(c2a,{labels:RAW.map(r=>lbl(r.m)),yfmt:v=>"$"+(v/1000).toFixed(0)+"k",
-    series:[{name:"Inventario",color:css("--k-1"),data:RAW.map(r=>r.inv)},
-      {name:"Créditos x ventas",color:css("--k-3"),data:RAW.map(r=>r.cxc)},
-      {name:"Otros",color:css("--k-4"),data:RAW.map(r=>r.otros)},
-      {name:"Deudas comerciales",color:css("--k-2"),data:RAW.map(r=>r.cxp)}]});
-})();
-
-/* ---------- S2b crecimiento por componente ---------- */
-(function(){
-  legend(lg2b,[{t:"Crecimiento nominal oct '25 → ago '26",c:css("--k-1")}]);
-  hbarChart(c2b,[
-    {label:"Capital de trabajo",value:pct(end.wc,base.wc),color:css("--accent")},
-    {label:"Inventario",value:pct(end.inv,base.inv),color:css("--k-1")},
-    {label:"Créditos x ventas",value:pct(end.cxc,base.cxc),color:css("--k-1")},
-    {label:"Deudas comerc. (financ.)",value:pct(end.cxp,base.cxp),color:css("--k-1")},
-  ],v=>fpct(v));
+  const BI=1.556; const rr=(v,idx)=>v==null?null:Math.round(v*BI/idx); // deflactar a ago-26
+  const dinv=RAW.map(r=>rr(r.inv,r.idx)), dcxc=RAW.map(r=>rr(r.cxc,r.idx)),
+        dcxp=RAW.map(r=>rr(r.cxp,r.idx)), dotr=RAW.map(r=>rr(r.otros,r.idx));
+  legend(lg2a,[{t:"Inventario",c:css("--k-1"),line:1},{t:"Créditos x ventas",c:css("--k-3"),line:1},{t:"Otros",c:css("--k-4"),line:1},{t:"Deudas comerciales",c:css("--k-2"),line:1}]);
+  comboChart(c2a,{labels:RAW.map(r=>lbl(r.m)),
+    lines:[{data:dinv,color:css("--k-1")},{data:dcxc,color:css("--k-3")},{data:dotr,color:css("--k-4")},{data:dcxp,color:css("--k-2")}],
+    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",tip:v=>money(v)+" M"});
+  const g=(a,arr)=>arr[RAW.findIndex(r=>r.m=="2026-08")]/arr[RAW.findIndex(r=>r.m==a)]-1;
+  const gi=g("2025-10",dinv),gc=g("2025-10",dcxc),gp=g("2025-10",dcxp),go=g("2025-10",dotr);
   t2.innerHTML=[
-    ["neg",`El capital de trabajo creció <b>${fpct(pct(end.wc,base.wc))}</b> nominal (de ${money(base.wc)} a ${money(end.wc)} M), casi todo <b>inventario</b> (${fpct(pct(end.inv,base.inv))}; hoy el <b>${(end.inv/end.wc*100).toFixed(0)}%</b> del total).`],
-    ["neu",`Los <b>créditos por ventas</b> subieron ${fpct(pct(end.cxc,base.cxc))}: el capital se inmoviliza más en el depósito que en la calle.`],
-    ["neg",`Las <b>deudas comerciales</b> (proveedores) solo crecieron ${fpct(pct(end.cxp,base.cxp))}: no financiaron la compra de stock; la empresa la autofinanció con capital propio.`],
+    ["neg",`En términos <b>reales</b> el capital de trabajo creció <b>${fpct(pct(end.wcreal,base.wcreal))}</b> (oct '25 → ago '26), traccionado por <b>inventario</b> (${fpct(gi*100)} real; hoy el <b>${(end.inv/end.wc*100).toFixed(0)}%</b> del total).`],
+    ["neu",`Los <b>créditos por ventas</b> reales ${gc>=0?"subieron":"cayeron"} ${fpct(gc*100)} y <b>Otros</b> ${fpct(go*100)}: el capital se concentra cada vez más en stock.`],
+    ["neg",`La <b>financiación de proveedores</b> (deudas comerciales) ${gp<=0?"se achicó":"creció"} ${Math.abs(gp*100).toFixed(1)}% en términos reales: no acompañó la compra de stock; la empresa la autofinanció con capital propio.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
