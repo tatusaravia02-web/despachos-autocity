@@ -93,14 +93,10 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 <section>
   <div class=snum>01 — Evolución de la Obsolescencia</div>
   <h2>Obsolescencia del stock de repuestos · ene 2026 → hoy</h2>
-  <p class=lead>Composición del stock de repuestos a costo (total Autocity) por antigüedad y rotación. <b>Problemático = muerto + dormido + sobrestock semestral</b>; el sobrestock trimestral y la rotación se consideran aceptables. La etiqueta sobre cada barra es el % problemático; la última columna (<b>Objetivo</b>) es la meta de composición a alcanzar.</p>
+  <p class=lead>Composición del stock de repuestos a costo (total Autocity) por antigüedad y rotación. <b>Problemático = muerto + dormido + sobrestock semestral</b>; el sobrestock trimestral y la rotación se consideran aceptables. Dentro de cada barra, el % es la participación de cada clasificación sobre el total; la etiqueta superior es el % problemático; la última columna (<b>Objetivo 2027</b>) es la meta de composición a alcanzar.</p>
   <div class=legend id=lg1></div>
   <div class=chartbox id=c1></div>
   <ul class=takeaways id=t1></ul>
-  <h3 style="font-size:15.5px;margin:24px 0 3px">¿Dónde estamos hoy y a dónde queremos llegar?</h3>
-  <p class=lead style="margin-bottom:10px">Composición del stock de hoy (oct‑26) por categoría frente al objetivo. <b>Metas 2027 provisorias</b> (por ahora, el objetivo cargado en la planilla) — se reemplazan por las definidas para 2027.</p>
-  <div class=legend id=lg1b></div>
-  <div class=chartbox sm id=c1b></div>
 </section>
 
 <section>
@@ -221,7 +217,8 @@ function stackComboChart(host,cfg){ // barras apiladas (+ línea opcional en eje
   let Y2=null,s2=null;
   if(hasLine){const lv=cfg.line.data.filter(v=>v!=null);s2=niceScale(0,Math.max(...lv),5);Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));}
   axes(svg,P,{ticks:s1.ticks,Y,Y2,t2:s2},{ticks:s1.ticks,fmt:cfg.yfmt,x2:hasLine?cfg.y2fmt:null});
-  labels.forEach((_,i)=>{let accP=0,accN=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});
+  labels.forEach((_,i)=>{let accP=0,accN=0,tot=0;cfg.stacks.forEach(st=>tot+=st.data[i]||0);cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);
+      if(cfg.segPct&&tot&&Math.abs(y1-y0)>13){svg.appendChild(TX(cx(i),(y0+y1)/2+3,Math.round(v/tot*100)+"%",{"text-anchor":"middle",fill:"#fff","font-size":9,"font-weight":600,"font-family":"IBM Plex Mono"}));}});
     if(cfg.topLabels&&cfg.topLabels[i]!=null){svg.appendChild(TX(cx(i),Y(accP)-5,cfg.topLabels[i],{"text-anchor":"middle",fill:css("--ink"),"font-size":10.5,"font-weight":600,"font-family":"IBM Plex Mono"}));}});
   if(hasLine){let d="";cfg.line.data.forEach((v,i)=>{if(v==null)return;d+=(d?"L":"M")+cx(i)+" "+Y2(v)+" ";});
     svg.appendChild(E("path",{d,fill:"none",stroke:cfg.line.color,"stroke-width":3,"stroke-linejoin":"round"}));
@@ -286,7 +283,7 @@ function hbarChart(host,items,fmt){
 (function(){
   const now0=OBS[OBS.length-1], stk=now0.stock;
   const OBJ={sano:0.82*stk, sem:0.10*stk, obsoleto:0.08*stk, pct:18};   // meta: composición objetivo × stock actual
-  const L=OBS.map(o=>lbl(o.m)).concat(["Objetivo"]);
+  const L=OBS.map(o=>lbl(o.m)).concat(["Objetivo 2027"]);
   const dSano=OBS.map(o=>o.rot+o.trim).concat([OBJ.sano]);
   const dSem =OBS.map(o=>o.sem).concat([OBJ.sem]);
   const dObs =OBS.map(o=>o.obsoleto).concat([OBJ.obsoleto]);
@@ -298,7 +295,7 @@ function hbarChart(host,items,fmt){
       {name:"Sobrestock semestral",color:css("--k-4"),data:dSem},
       {name:"Obsoleto (muerto + dormido)",color:css("--bad"),data:dObs},
     ],
-    topLabels:dPct.map(v=>v.toFixed(0)+"%"),
+    topLabels:dPct.map(v=>v.toFixed(0)+"%"), segPct:true,
     yfmt:v=>"$"+(v/1000).toFixed(0)+"k"});
   const g=OBS.find(o=>o.m=="2026-01"),best=OBS.find(o=>o.m=="2026-08"),sep=OBS.find(o=>o.m=="2026-09"),now=OBS[OBS.length-1];
   t1.innerHTML=[
@@ -307,16 +304,6 @@ function hbarChart(host,items,fmt){
     ["neg",`El deterioro reciente viene del <b>sobrestock semestral</b> (de ${money(best.sem)} M en ago a ${money(now.sem)} M) y del <b>stock dormido</b> (de ${money(best.dormido)} M a ${money(now.dormido)} M).`],
     ["neu",`Hoy ~<b>${money(now.obsol)} M</b> (${now.pct.toFixed(0)}%) del stock de repuestos es problemático. Oct‑26 es parcial (al 6/10) e incorpora la marca LEAP.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
-
-  /* --- Hoy vs. objetivo 2027 (por categoría, % del stock) --- */
-  const pc=v=>v/now.stock*100;
-  const cats=["Obsoleto","Sob. semestral","Rotación + trim. (sano)"];
-  const hoy=[pc(now.muerto+now.dormido),pc(now.sem),pc(now.rot+now.trim)];
-  const obj2027=[8,10,82]; // PROVISORIO: objetivo de la planilla (obsoleto 5+3, sem 10, sano rot 67 + trim 15); reemplazar por metas 2027
-  legend(lg1b,[{t:"Hoy (oct‑26)",c:css("--k-2")},{t:"Objetivo 2027 (provisorio)",c:css("--k-3")}]);
-  groupedBars(c1b,{cats,fmt:v=>v.toFixed(0)+"%",
-    series:[{name:"Hoy (oct‑26)",color:css("--k-2"),data:hoy},
-            {name:"Objetivo 2027",color:css("--k-3"),data:obj2027}]});
 })();
 
 /* ---------- S2 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
@@ -333,7 +320,7 @@ function hbarChart(host,items,fmt){
             {name:"Servicios (taller + siniestros)",color:cS,data:servRes},
             {name:"Resultados de stock",color:cK,data:stockRes}],
     line:{data:CT,color:cT},
-    topLabels:totalRes.map(v=>money(v)),
+    topLabels:totalRes.map(v=>money(v)), segPct:true,
     yfmt:v=>"$"+v, y2fmt:v=>"$"+(v/1000).toFixed(0)+"k"});
   const pctCT=arr=>arr.map((v,i)=>+(v/CT[i]*100).toFixed(2));
   legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1},{t:"Resultados de stock",c:cK,line:1},{t:"Total (rentabilidad s/ capital)",c:cT,line:1}]);
