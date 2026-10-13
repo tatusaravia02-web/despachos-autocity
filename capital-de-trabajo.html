@@ -93,7 +93,7 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 <section>
   <div class=snum>01 — Evolución de la Obsolescencia</div>
   <h2>Obsolescencia del stock de repuestos · ene 2026 → hoy</h2>
-  <p class=lead>Composición del stock de repuestos a costo (total Autocity) por antigüedad y rotación. <b>Problemático = muerto + dormido + sobrestock semestral</b>; el sobrestock trimestral y la rotación se consideran aceptables. La línea negra es el % problemático sobre el total.</p>
+  <p class=lead>Composición del stock de repuestos a costo (total Autocity) por antigüedad y rotación. <b>Problemático = muerto + dormido + sobrestock semestral</b>; el sobrestock trimestral y la rotación se consideran aceptables. La etiqueta sobre cada barra es el % problemático; la última columna (<b>Objetivo</b>) es la meta de composición a alcanzar.</p>
   <div class=legend id=lg1></div>
   <div class=chartbox id=c1></div>
   <ul class=takeaways id=t1></ul>
@@ -104,32 +104,9 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 </section>
 
 <section>
-  <div class=snum>02 — Desglose del Capital de Trabajo</div>
-  <h2>Componentes: Inventario, Créditos, Deudas y Otros</h2>
-  <p class=lead>Evolución de cada componente en términos <b>reales</b> (deflactado por índice de precios de lista, base ago‑26). Se mantiene la identidad <span class=mono>Inventario + Créditos − Deudas comerciales + Otros = Capital de trabajo</span>.</p>
-  <div class=legend id=lg2a></div>
-  <div class=chartbox id=c2a></div>
-  <ul class=takeaways id=t2></ul>
-</section>
-
-<section>
-  <div class=snum>03 — Capital de Trabajo vs. Facturación y Margen (real)</div>
-  <h2>¿Acompañó la expansión a las ventas y la rentabilidad?</h2>
-  <p class=lead>Primero, el capital de trabajo nominal vs. real: la brecha es pura inflación de precios. Luego, en términos <b>reales</b> y en base&nbsp;100 (oct‑25), la evolución del capital frente a la facturación y el margen (meses comparables).</p>
-  <div class=grid2>
-    <div><div class=legend id=lg3a></div><div class=chartbox sm id=c3a></div></div>
-    <div><div class=legend id=lg3b></div><div class=chartbox sm id=c3b></div></div>
-  </div>
-  <div class=legend id=lg3c style="margin-top:14px"></div>
-  <div class=chartbox sm id=c3c></div>
-  <div class=scroll><table id=tbl3></table></div>
-  <ul class=takeaways id=t3></ul>
-</section>
-
-<section>
-  <div class=snum>04 — Rentabilidad por área de posventa</div>
+  <div class=snum>02 — Rentabilidad por área de posventa</div>
   <h2>Áreas de posventa vs. capital de trabajo (mes a mes)</h2>
-  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), mes a mes (mar–ago 2026), comparados contra el capital de trabajo total. El capital es casi todo inventario y no se abre por área en la fuente.</p>
+  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), mes a mes (ene–ago 2026), comparados contra el capital de trabajo total. Bienes = repuestos + accesorios; Servicios = taller + siniestros. El capital es casi todo inventario y no se abre por área en la fuente.</p>
   <div style="font-size:12px;color:var(--slate);margin:2px 0 6px">Resultado por área ($ millones) · <b>línea negra = capital de trabajo total</b> (eje derecho)</div>
   <div class=legend id=lg5></div>
   <div class=chartbox id=c5a></div>
@@ -140,7 +117,7 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 </section>
 
 <section>
-  <div class=snum>05 — Conclusión y Diagnóstico Financiero</div>
+  <div class=snum>03 — Conclusión y Diagnóstico Financiero</div>
   <h2>¿Fue eficiente la expansión del capital de trabajo?</h2>
   <div class=verdict id=verdict></div>
   <div class=reco id=reco></div>
@@ -231,22 +208,24 @@ function comboChart(host,cfg){ // bars (per cat, by sign color or fixed) + lines
   // lines
   (cfg.lines||[]).forEach(l=>{const yf=l.axis2?Y2:Y;let d="";l.data.forEach((v,i)=>{if(v==null){d+="";return;}d+=(d&&!d.endsWith("M")?"L":"M")+cx(i)+" "+yf(v)+" ";});
     svg.appendChild(E("path",{d,fill:"none",stroke:l.color,"stroke-width":l.w||2.5,"stroke-dasharray":l.dash||"","stroke-linejoin":"round"}));
-    l.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:yf(v),r:l.r||2.6,fill:l.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${(l.tip||cfg.tip||(x=>x))(v)}`;svg.appendChild(p);});});
+    l.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:yf(v),r:l.r||2.6,fill:l.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${(l.tip||cfg.tip||(x=>x))(v)}`;svg.appendChild(p);});
+    if(l.lbl){l.data.forEach((v,i)=>{if(v==null)return;svg.appendChild(TX(cx(i),yf(v)-7,(l.lblfmt||cfg.yfmt||(x=>x))(v),{"text-anchor":"middle",fill:l.color,"font-size":9.5,"font-weight":600,"font-family":"IBM Plex Mono"}));});}});
   host.appendChild(svg);
 }
-function stackComboChart(host,cfg){ // barras apiladas + línea en eje derecho
-  host.innerHTML="";const{w,h}=dims(host);const P={l:50,r:48,t:10,b:24,w,h};
+function stackComboChart(host,cfg){ // barras apiladas (+ línea opcional en eje derecho, + etiquetas arriba)
+  host.innerHTML="";const{w,h}=dims(host);const hasLine=!!cfg.line;const P={l:50,r:hasLine?48:16,t:cfg.topLabels?22:10,b:24,w,h};
   const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
   const labels=cfg.labels;const{bw,cx}=cats(svg,P,labels);
   let mx=0,mn=0;labels.forEach((_,i)=>{let p=0,n=0;cfg.stacks.forEach(st=>{const v=st.data[i]||0;if(v>=0)p+=v;else n+=v;});mx=Math.max(mx,p);mn=Math.min(mn,n);});
   const s1=niceScale(mn,mx,5),Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
-  const lv=cfg.line.data.filter(v=>v!=null),s2=niceScale(0,Math.max(...lv),5);
-  const Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));
-  axes(svg,P,{ticks:s1.ticks,Y,Y2,t2:s2},{ticks:s1.ticks,fmt:cfg.yfmt,x2:cfg.y2fmt});
-  labels.forEach((_,i)=>{let accP=0,accN=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});});
-  let d="";cfg.line.data.forEach((v,i)=>{if(v==null)return;d+=(d?"L":"M")+cx(i)+" "+Y2(v)+" ";});
-  svg.appendChild(E("path",{d,fill:"none",stroke:cfg.line.color,"stroke-width":3,"stroke-linejoin":"round"}));
-  cfg.line.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:Y2(v),r:3.2,fill:cfg.line.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${v.toFixed(1)}%`;svg.appendChild(p);});
+  let Y2=null,s2=null;
+  if(hasLine){const lv=cfg.line.data.filter(v=>v!=null);s2=niceScale(0,Math.max(...lv),5);Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));}
+  axes(svg,P,{ticks:s1.ticks,Y,Y2,t2:s2},{ticks:s1.ticks,fmt:cfg.yfmt,x2:hasLine?cfg.y2fmt:null});
+  labels.forEach((_,i)=>{let accP=0,accN=0;cfg.stacks.forEach(st=>{const v=st.data[i];if(v==null)return;const x=cx(i)-bw*0.33,bwid=bw*0.66;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:st.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${st.name}: ${money(v)} M`;svg.appendChild(rc);});
+    if(cfg.topLabels&&cfg.topLabels[i]!=null){svg.appendChild(TX(cx(i),Y(accP)-5,cfg.topLabels[i],{"text-anchor":"middle",fill:css("--ink"),"font-size":10.5,"font-weight":600,"font-family":"IBM Plex Mono"}));}});
+  if(hasLine){let d="";cfg.line.data.forEach((v,i)=>{if(v==null)return;d+=(d?"L":"M")+cx(i)+" "+Y2(v)+" ";});
+    svg.appendChild(E("path",{d,fill:"none",stroke:cfg.line.color,"stroke-width":3,"stroke-linejoin":"round"}));
+    cfg.line.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:Y2(v),r:3.2,fill:cfg.line.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${v.toFixed(1)}%`;svg.appendChild(p);});}
   host.appendChild(svg);
 }
 function groupedBars(host,cfg){ // barras agrupadas por categoría (valores en %)
@@ -305,16 +284,22 @@ function hbarChart(host,items,fmt){
 
 /* ---------- S1 obsolescencia (aging del stock) ---------- */
 (function(){
-  const L=OBS.map(o=>lbl(o.m));
-  legend(lg1,[{t:"Rotación + trim. (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Obsoleto (muerto + dormido)",c:css("--bad")},{t:"% problemático",c:css("--ink"),line:1}]);
+  const now0=OBS[OBS.length-1], stk=now0.stock;
+  const OBJ={sano:0.82*stk, sem:0.10*stk, obsoleto:0.08*stk, pct:18};   // meta: composición objetivo × stock actual
+  const L=OBS.map(o=>lbl(o.m)).concat(["Objetivo"]);
+  const dSano=OBS.map(o=>o.rot+o.trim).concat([OBJ.sano]);
+  const dSem =OBS.map(o=>o.sem).concat([OBJ.sem]);
+  const dObs =OBS.map(o=>o.obsoleto).concat([OBJ.obsoleto]);
+  const dPct =OBS.map(o=>o.pct).concat([OBJ.pct]);
+  legend(lg1,[{t:"Rotación + trim. (sano)",c:css("--k-3")},{t:"Sobrestock semestral",c:css("--k-4")},{t:"Obsoleto (muerto + dormido)",c:css("--bad")},{t:"etiqueta = % problemático · última columna = Objetivo",c:"transparent"}]);
   stackComboChart(c1,{labels:L,
     stacks:[
-      {name:"Rotación + trim. (sano)",color:css("--k-3"),data:OBS.map(o=>o.rot+o.trim)},
-      {name:"Sobrestock semestral",color:css("--k-4"),data:OBS.map(o=>o.sem)},
-      {name:"Obsoleto (muerto + dormido)",color:css("--bad"),data:OBS.map(o=>o.obsoleto)},
+      {name:"Rotación + trim. (sano)",color:css("--k-3"),data:dSano},
+      {name:"Sobrestock semestral",color:css("--k-4"),data:dSem},
+      {name:"Obsoleto (muerto + dormido)",color:css("--bad"),data:dObs},
     ],
-    line:{data:OBS.map(o=>o.pct),color:css("--ink")},
-    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",y2fmt:v=>v+"%"});
+    topLabels:dPct.map(v=>v.toFixed(0)+"%"),
+    yfmt:v=>"$"+(v/1000).toFixed(0)+"k"});
   const g=OBS.find(o=>o.m=="2026-01"),best=OBS.find(o=>o.m=="2026-08"),sep=OBS.find(o=>o.m=="2026-09"),now=OBS[OBS.length-1];
   t1.innerHTML=[
     ["pos",`El stock problemático (muerto + dormido + semestral) <b>mejoró de ${g.pct.toFixed(0)}% (ene) a ${best.pct.toFixed(0)}% (ago '26)</b>: ocho meses de saneamiento, cayendo de ${money(g.obsol)} M a su mínimo de ${money(best.obsol)} M.`],
@@ -334,94 +319,31 @@ function hbarChart(host,items,fmt){
             {name:"Objetivo 2027",color:css("--k-3"),data:obj2027}]});
 })();
 
-/* ---------- S2 componentes en términos reales (líneas) ---------- */
+/* ---------- S2 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
 (function(){
-  const BI=1.556; const rr=(v,idx)=>v==null?null:Math.round(v*BI/idx); // deflactar a ago-26
-  const dinv=RAW.map(r=>rr(r.inv,r.idx)), dcxc=RAW.map(r=>rr(r.cxc,r.idx)),
-        dcxp=RAW.map(r=>rr(r.cxp,r.idx)), dotr=RAW.map(r=>rr(r.otros,r.idx));
-  const dtot=RAW.map((r,i)=>dinv[i]+dcxc[i]+dcxp[i]+dotr[i]);
-  legend(lg2a,[{t:"Capital de trabajo (total)",c:css("--k-5"),line:1},{t:"Inventario",c:css("--k-1"),line:1},{t:"Créditos x ventas",c:css("--k-3"),line:1},{t:"Otros",c:css("--k-4"),line:1},{t:"Deudas comerciales",c:css("--k-2"),line:1}]);
-  comboChart(c2a,{labels:RAW.map(r=>lbl(r.m)),
-    lines:[{data:dtot,color:css("--k-5"),w:3.4,r:3},{data:dinv,color:css("--k-1")},{data:dcxc,color:css("--k-3")},{data:dotr,color:css("--k-4")},{data:dcxp,color:css("--k-2")}],
-    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",tip:v=>money(v)+" M"});
-  const g=(a,arr)=>arr[RAW.findIndex(r=>r.m=="2026-08")]/arr[RAW.findIndex(r=>r.m==a)]-1;
-  const gi=g("2025-10",dinv),gc=g("2025-10",dcxc),gp=g("2025-10",dcxp),go=g("2025-10",dotr);
-  t2.innerHTML=[
-    ["neg",`En términos <b>reales</b> el capital de trabajo creció <b>${fpct(pct(end.wcreal,base.wcreal))}</b> (oct '25 → ago '26), traccionado por <b>inventario</b> (${fpct(gi*100)} real; hoy el <b>${(end.inv/end.wc*100).toFixed(0)}%</b> del total).`],
-    ["neu",`Los <b>créditos por ventas</b> reales ${gc>=0?"subieron":"cayeron"} ${fpct(gc*100)} y <b>Otros</b> ${fpct(go*100)}: el capital se concentra cada vez más en stock.`],
-    ["neg",`La <b>financiación de proveedores</b> (deudas comerciales) ${gp<=0?"se achicó":"creció"} ${Math.abs(gp*100).toFixed(1)}% en términos reales: no acompañó la compra de stock; la empresa la autofinanció con capital propio.`],
-  ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
-})();
-
-/* ---------- S3a nominal vs real WC ---------- */
-(function(){
-  legend(lg3a,[{t:"Capital de trabajo nominal",c:css("--k-2"),line:1},{t:"Capital de trabajo real (ago‑26)",c:css("--accent"),line:1}]);
-  comboChart(c3a,{labels:RAW.map(r=>lbl(r.m)),
-    lines:[{data:RAW.map(r=>r.wc),color:css("--k-2")},{data:RAW.map(r=>r.wcreal),color:css("--accent")}],
-    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",tip:v=>money(v)+" M"});
-})();
-
-/* ---------- S3b meses de stock + margen % ---------- */
-(function(){
-  const C=WIN.filter(r=>r.comp);
-  legend(lg3b,[{t:"Meses de stock",c:css("--k-4")},{t:"Margen bruto %",c:css("--k-3"),line:1}]);
-  comboChart(c3b,{labels:C.map(r=>lbl(r.m)),y2:true,
-    bars:[{data:C.map(r=>r.inv/r.vta),color:css("--k-4")}],
-    lines:[{data:C.map(r=>r.mg/r.vta*100),color:css("--k-3"),axis2:true,tip:v=>v.toFixed(1)+"%"}],
-    yfmt:v=>v.toFixed(1),y2fmt:v=>v+"%",tip:v=>v.toFixed(2)+" meses"});
-})();
-
-/* ---------- S3c indexado real base 100 ---------- */
-(function(){
-  const C=WIN.filter(r=>r.comp),b={wc:C[0].wcreal,v:C[0].vtareal,m:C[0].mgreal};
-  legend(lg3c,[{t:"Capital de trabajo (real)",c:css("--k-2"),line:1},{t:"Facturación (real)",c:css("--k-1"),line:1},{t:"Margen bruto (real)",c:css("--k-3"),line:1},{t:"base 100 = oct '25",c:"transparent"}]);
-  comboChart(c3c,{labels:C.map(r=>lbl(r.m)),y1min:80,
-    lines:[{data:C.map(r=>r.wcreal/b.wc*100),color:css("--k-2")},
-      {data:C.map(r=>r.vtareal/b.v*100),color:css("--k-1")},
-      {data:C.map(r=>r.mgreal/b.m*100),color:css("--k-3")}],
-    yfmt:v=>v,tip:v=>v.toFixed(0)});
-})();
-
-/* ---------- tabla ---------- */
-(function(){
-  const head=["Mes","CT nom.","CT real","Fact. real","Mg real","Mg %","Meses stock"];
-  let h="<thead><tr>"+head.map(x=>`<th>${x}</th>`).join("")+"</tr></thead><tbody>";
-  WIN.forEach(r=>{h+=`<tr><td>${lbl(r.m)}</td><td class=mono>${money(r.wc)}</td><td class=mono>${money(r.wcreal)}</td>`+
-    (r.comp?`<td class=mono>${money(r.vtareal)}</td><td class=mono>${money(r.mgreal)}</td><td class=mono>${(r.mg/r.vta*100).toFixed(1)}%</td><td class=mono>${(r.inv/r.vta).toFixed(2)}</td>`
-           :`<td class=nc colspan=4>preliminar · no comparable</td>`)+`</tr>`;});
-  tbl3.innerHTML=h+"</tbody>";
-  const C=WIN.filter(r=>r.comp),c0=C[0],c1=C[C.length-1];
-  t3.innerHTML=[
-    ["neg",`<b>En términos reales, el capital de trabajo creció ${fpct(pct(end.wcreal,base.wcreal))} mientras la facturación cayó ${fpct(pct(c1.vtareal,c0.vtareal))}</b> (oct '25 → ago '26): se inmovilizó más capital real con menos ventas reales.`],
-    ["neg",`El <b>margen bruto real</b> también retrocedió ${fpct(pct(c1.mgreal,c0.mgreal))}: la rentabilidad no sostuvo la mayor inversión.`],
-    ["neg",`Los <b>meses de stock</b> subieron de ${(base.inv/c0.vta).toFixed(2)} a <b>${(end.inv/c1.vta).toFixed(2)}</b> (indicador independiente de la inflación): deterioro claro de rotación.`],
-    ["neu",`El salto nominal (${fpct(pct(end.wc,base.wc))}) sobreestima: ~${fpct(pct(end.wc,base.wc)-pct(end.wcreal,base.wcreal))} del aumento del capital es sólo recomposición por precios.`],
-  ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
-})();
-
-/* ---------- S4 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
-(function(){
-  const L=["mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
-  // Bienes = Repuestos CBA + Repuestos interior + Accesorios ; Servicios = Taller CBA + Taller interior + Siniestros
-  const bienesRes=[334,306,123,287,308,296], servRes=[323,319,203,263,359,408], stockRes=[317,131,260,36,267,-218];
-  const CT=[10479,11189,11995,12687,12367,13962];      // capital de trabajo total
-  const RESN=[973,757,586,587,935,485];                 // resultado neto total
-  const cB=css("--k-1"),cS=css("--k-3"),cK=css("--k-4");
-  legend(lg5,[{t:"Bienes (repuestos + accesorios)",c:cB},{t:"Servicios (taller + siniestros)",c:cS},{t:"Resultados de stock",c:cK},{t:"Capital de trabajo (total)",c:css("--ink"),line:1}]);
+  const L=["ene '26","feb '26","mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
+  // Bienes = Rep CBA + Rep interior + Accesorios ; Servicios = Taller CBA + Taller interior + Siniestros
+  const bienesRes=[242,79,334,306,123,287,308,296], servRes=[175,32,323,319,203,263,359,408], stockRes=[176,228,317,131,260,36,267,-218];
+  const CT=[9769,10124,10479,11189,11995,12687,12367,13962];       // capital de trabajo total
+  const totalRes=bienesRes.map((b,i)=>b+servRes[i]+stockRes[i]);    // resultado posventa (= suma de los 3 grupos)
+  const cB=css("--k-1"),cS=css("--k-3"),cK=css("--k-4"),cT=css("--ink");
+  legend(lg5,[{t:"Bienes (repuestos + accesorios)",c:cB},{t:"Servicios (taller + siniestros)",c:cS},{t:"Resultados de stock",c:cK},{t:"Capital de trabajo (total)",c:cT,line:1}]);
   stackComboChart(c5a,{labels:L,
     stacks:[{name:"Bienes (rep + accesorios)",color:cB,data:bienesRes},
             {name:"Servicios (taller + siniestros)",color:cS,data:servRes},
             {name:"Resultados de stock",color:cK,data:stockRes}],
-    line:{data:CT,color:css("--ink")},
+    line:{data:CT,color:cT},
+    topLabels:totalRes.map(v=>money(v)),
     yfmt:v=>"$"+v, y2fmt:v=>"$"+(v/1000).toFixed(0)+"k"});
   const pctCT=arr=>arr.map((v,i)=>+(v/CT[i]*100).toFixed(2));
-  legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1},{t:"Resultados de stock",c:cK,line:1}]);
+  legend(lg5b,[{t:"Bienes (repuestos + accesorios)",c:cB,line:1},{t:"Servicios (taller + siniestros)",c:cS,line:1},{t:"Resultados de stock",c:cK,line:1},{t:"Total (rentabilidad s/ capital)",c:cT,line:1}]);
   comboChart(c5b,{labels:L,
-    lines:[{data:pctCT(bienesRes),color:cB,w:2.5,r:2.5},{data:pctCT(servRes),color:cS,w:2.5,r:2.5},{data:pctCT(stockRes),color:cK,w:2.5,r:2.5}],
+    lines:[{data:pctCT(bienesRes),color:cB,w:2,r:2.2},{data:pctCT(servRes),color:cS,w:2,r:2.2},{data:pctCT(stockRes),color:cK,w:2,r:2.2},
+           {data:pctCT(totalRes),color:cT,w:3.2,r:3,lbl:true,lblfmt:v=>v.toFixed(1)+"%"}],
     yfmt:v=>v+"%",tip:v=>v.toFixed(2)+"%"});
-  const row=(i)=>(RESN[i]/CT[i]*100);
+  const row=(i)=>(totalRes[i]/CT[i]*100);
   t5.innerHTML=[
-    ["neg",`Mientras el <b>capital de trabajo subió de $10.479 M (mar) a $13.962 M (ago)</b>, el resultado neto cayó de $973 M a $485 M: la <b>rentabilidad sobre el capital bajó de ${row(0).toFixed(1)}% a ${row(5).toFixed(1)}%</b>.`],
+    ["neg",`El <b>capital de trabajo subió de $9.769 M (ene) a $13.962 M (ago)</b> mientras el resultado de posventa se mantuvo plano: la <b>rentabilidad total sobre el capital bajó de ${row(0).toFixed(1)}% (ene) a ${row(7).toFixed(1)}% (ago)</b>, con un pico de ${row(2).toFixed(1)}% en mar.`],
     ["neu",`Medido <b>sobre el capital de trabajo</b>, Bienes y Servicios aportan ~2–3% cada uno por mes; <b>Servicios pasó a aportar más que Bienes en jul–ago</b>.`],
     ["neg",`Los <b>Resultados de stock</b> son muy volátiles: aportaron <b>+3,0% sobre el capital en mar</b> pero restaron <b>−1,6% en ago</b> (−$218 M), golpeando el retorno del mes.`],
     ["neu",`El capital (inventario) está concentrado en <b>Bienes</b>; su aporte sobre el capital ronda ~2–3% mensual mientras el capital sigue creciendo: el retorno sobre el stock inmovilizado es el foco a vigilar.`],
