@@ -128,13 +128,14 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 
 <section>
   <div class=snum>04 — Rentabilidad por área de posventa</div>
-  <h2>¿Qué áreas generan el resultado y cuáles usan el capital?</h2>
-  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), últimos 6 meses (mar–ago 2026). El capital de trabajo es casi todo <b>inventario</b>: no se abre por área en la fuente, pero se concentra en las áreas que <b>venden stock</b> (repuestos, accesorios) frente a las de <b>servicio</b> (taller, siniestros) — señaladas por color.</p>
+  <h2>Áreas de posventa vs. capital de trabajo (mes a mes)</h2>
+  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), mes a mes (mar–ago 2026), comparados contra el capital de trabajo total. El capital es casi todo inventario y no se abre por área en la fuente.</p>
+  <div style="font-size:12px;color:var(--slate);margin:2px 0 6px">Resultado por área ($ millones) · <b>línea negra = capital de trabajo total</b> (eje derecho)</div>
   <div class=legend id=lg5></div>
-  <div class=grid2>
-    <div><div style="font-size:12px;color:var(--slate);margin:2px 0 8px">Resultado acumulado 6 meses ($ millones)</div><div class=chartbox sm id=c5a></div></div>
-    <div><div style="font-size:12px;color:var(--slate);margin:2px 0 8px">Rentabilidad promedio 6 meses (% sobre ventas)</div><div class=chartbox sm id=c5b></div></div>
-  </div>
+  <div class=chartbox id=c5a></div>
+  <div style="font-size:12px;color:var(--slate);margin:16px 0 6px">Rentabilidad por área (% sobre ventas)</div>
+  <div class=legend id=lg5b></div>
+  <div class=chartbox id=c5b></div>
   <ul class=takeaways id=t5></ul>
 </section>
 
@@ -399,27 +400,34 @@ function hbarChart(host,items,fmt){
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
-/* ---------- S4 rentabilidad por área de posventa (global, 6 meses) ---------- */
+/* ---------- S4 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
 (function(){
-  // res = resultado acumulado 6m ($ M); pct = rentabilidad promedio 6m (% s/ventas); inv = usa inventario
-  const A=[
-    {a:"Taller CBA",res:1317,pct:8.7,inv:false},
-    {a:"Repuestos CBA",res:1215,pct:8.1,inv:true},
-    {a:"Accesorios",res:481,pct:3.2,inv:true},
-    {a:"Siniestros",res:288,pct:1.9,inv:false},
-    {a:"Taller interior",res:271,pct:1.8,inv:false},
-    {a:"Repuestos interior",res:-43,pct:-0.3,inv:true},
+  const L=["mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
+  const AR=[
+    {a:"Repuestos CBA",c:css("--k-1"),res:[242,225,54,215,232,248],pct:[9.3,9.8,2.1,8.1,9.1,9.9]},
+    {a:"Taller CBA",c:css("--k-3"),res:[279,234,119,214,178,293],pct:[10.7,10.1,4.7,8.1,7.0,11.7]},
+    {a:"Accesorios",c:css("--k-4"),res:[97,98,83,88,67,48],pct:[3.7,4.3,3.3,3.3,2.6,1.9]},
+    {a:"Siniestros",c:css("--k-2"),res:[-26,37,38,77,79,83],pct:[-1.0,1.6,1.5,2.9,3.1,3.3]},
+    {a:"Taller interior",c:css("--k-5"),res:[70,48,46,-28,102,32],pct:[2.7,2.1,1.8,-1.0,4.0,1.3]},
+    {a:"Repuestos interior",c:css("--warn"),res:[-5,-17,-14,-16,9,0],pct:[-0.2,-0.7,-0.5,-0.6,0.4,0.0]},
   ];
-  const colInv=css("--k-2"),colSvc=css("--k-3");
-  const col=x=>x.inv?colInv:colSvc;
-  legend(lg5,[{t:"Vende stock (usa inventario / capital)",c:colInv},{t:"Servicio (poco inventario)",c:colSvc}]);
-  hbarChart(c5a,A.map(x=>({label:x.a,value:x.res,color:col(x)})),v=>money(v));
-  hbarChart(c5b,A.map(x=>({label:x.a,value:x.pct,color:col(x)})),v=>v.toFixed(1)+"%");
+  const CT=[10479,11189,11995,12687,12367,13962];      // capital de trabajo total
+  const RESN=[973,757,586,587,935,485];                 // resultado neto total
+  legend(lg5,AR.map(x=>({t:x.a,c:x.c})).concat([{t:"Capital de trabajo (total)",c:css("--ink"),line:1}]));
+  stackComboChart(c5a,{labels:L,
+    stacks:AR.map(x=>({name:x.a,color:x.c,data:x.res})),
+    line:{data:CT,color:css("--ink")},
+    yfmt:v=>"$"+v, y2fmt:v=>"$"+(v/1000).toFixed(0)+"k"});
+  legend(lg5b,AR.map(x=>({t:x.a,c:x.c,line:1})));
+  comboChart(c5b,{labels:L,
+    lines:AR.map(x=>({data:x.pct,color:x.c,w:2,r:2})),
+    yfmt:v=>v+"%",tip:v=>v.toFixed(1)+"%"});
+  const row=(i)=>(RESN[i]/CT[i]*100);
   t5.innerHTML=[
-    ["neu",`<b>Taller CBA ($1.317 M) y Repuestos CBA ($1.215 M)</b> generan el grueso del resultado de posventa (≈70% en 6 meses) y son las áreas más rentables (~8–9%).`],
-    ["neg",`<b>Accesorios</b> inmoviliza inventario (usa capital) pero rinde solo <b>~3%</b>; <b>Repuestos interior</b> directamente pierde (−0,3%): capital de stock con bajo o nulo retorno.`],
-    ["pos",`<b>Taller CBA</b> es la mejor relación rentabilidad/capital: alta rentabilidad y casi sin inventario (es servicio). Siniestros y Taller interior aportan poco (~2%).`],
-    ["neu",`Como el capital de trabajo es casi todo inventario, se concentra en <b>repuestos y accesorios</b>: repuestos CBA justifica ese capital; accesorios es el foco a mejorar (más rotación o menos stock).`],
+    ["neg",`Mientras el <b>capital de trabajo subió de $10.479 M (mar) a $13.962 M (ago)</b>, el resultado neto cayó de $973 M a $485 M: la <b>rentabilidad sobre el capital bajó de ${row(0).toFixed(1)}% a ${row(5).toFixed(1)}%</b>.`],
+    ["neu",`<b>Repuestos CBA</b> y <b>Taller CBA</b> sostienen el resultado todos los meses y son los más rentables (~8–12%); juntos explican la mayor parte del resultado mensual.`],
+    ["neg",`<b>Accesorios</b> cae mes a mes (3,7% → 1,9%) pese a inmovilizar inventario, y <b>Repuestos interior</b> está en rojo casi todos los meses: capital de stock poco rentable.`],
+    ["pos",`<b>Siniestros</b> mejora de forma sostenida (de −1,0% a 3,3%); <b>Taller interior</b> es volátil y de bajo aporte.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
