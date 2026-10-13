@@ -3,7 +3,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <style>
 :root{
   --ink:#1a1f27; --slate:#5b6570; --slate-soft:#88919a;
@@ -32,25 +31,30 @@ h1,h2,h3{font-family:'Archivo',sans-serif;letter-spacing:-.01em;margin:0}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:10px}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:7px}
 h1{font-weight:800;font-size:31px;text-wrap:balance;margin-bottom:6px}
-.sub{color:var(--slate);font-size:13.5px;max-width:64ch}
+.sub{color:var(--slate);font-size:13.5px;max-width:66ch}
 .period-badge{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--slate);background:var(--surface);border:1px solid var(--line);border-radius:100px;padding:8px 15px;white-space:nowrap;box-shadow:var(--shadow)}
 .period-badge b{color:var(--ink);font-weight:600}
 .note{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:10px;padding:11px 15px;font-size:12.5px;color:var(--ink);margin:18px 0 6px;display:flex;gap:9px;align-items:flex-start}
 .note b{color:var(--warn)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px;margin:22px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:13px;margin:22px 0}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow)}
-.kpi .lbl{font-size:11.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;margin-bottom:9px;font-weight:600}
-.kpi .val{font-family:'Archivo',sans-serif;font-weight:800;font-size:25px;line-height:1}
+.kpi .lbl{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;margin-bottom:9px;font-weight:600}
+.kpi .val{font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;line-height:1}
 .kpi .delta{font-size:12px;margin-top:7px;font-weight:600}
 .up{color:var(--good)} .down{color:var(--bad)} .warnc{color:var(--warn)}
 section{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px 24px 26px;box-shadow:var(--shadow);margin:20px 0}
 section .snum{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
 section h2{font-size:21px;margin:5px 0 3px}
-section .lead{color:var(--slate);font-size:13.5px;margin-bottom:16px;max-width:82ch}
-.chartbox{position:relative;height:340px;margin:8px 0 4px}
-.chartbox.sm{height:290px}
+section .lead{color:var(--slate);font-size:13.5px;margin-bottom:14px;max-width:88ch}
+.chartbox{position:relative;height:330px;margin:4px 0}
+.chartbox.sm{height:280px}
+.chartbox svg{display:block;width:100%;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--slate);margin:2px 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.legend i.ln{height:3px;border-radius:2px;width:15px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+@media(max-width:780px){.grid2{grid-template-columns:1fr}}
 .takeaways{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px}
 .takeaways li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
 .takeaways li::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;margin-top:6px;background:var(--accent)}
@@ -62,16 +66,14 @@ thead th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(
 tbody tr:hover{background:var(--surface-2)}
 td.nc{color:var(--slate-soft);font-style:italic}
 .verdict{border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);background:var(--bad-soft);border-radius:14px;padding:20px 22px}
-.verdict.mix{border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-soft)}
 .verdict h3{font-size:18px;margin-bottom:8px}
+.chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.chip.b{background:var(--bad-soft);color:var(--bad)} .chip.g{background:var(--good-soft);color:var(--good)} .chip.w{background:var(--warn-soft);color:var(--warn)}
 .reco{display:grid;gap:11px;margin-top:16px}
 .reco .r{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:13px}
 .reco .r b{color:var(--accent-ink)}
 .scroll{overflow-x:auto}
 footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;border-top:1px solid var(--line);padding-top:16px}
-.legend-inline{font-size:12px;color:var(--slate);margin:2px 0 10px}
-.chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.chip.b{background:var(--bad-soft);color:var(--bad)} .chip.g{background:var(--good-soft);color:var(--good)} .chip.w{background:var(--warn-soft);color:var(--warn)}
 </style></head>
 <body><div class=wrap>
 
@@ -79,50 +81,49 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
   <div>
     <div class=eyebrow>Autocity · Posventa Global · Análisis financiero</div>
     <h1>Evolución del Capital de Trabajo</h1>
-    <p class=sub>Diagnóstico de la expansión del capital de trabajo y su justificación frente a la facturación y el margen bruto. Foco en el período octubre&nbsp;2025 → agosto&nbsp;2026.</p>
+    <p class=sub>¿La expansión del capital de trabajo estuvo justificada por más ventas y mejor margen? Análisis nominal y <b>real (deflactado por inflación de lista)</b>, con foco en octubre&nbsp;2025 → agosto&nbsp;2026.</p>
   </div>
-  <div class=period-badge>Serie <b>mar&nbsp;2025 – ago&nbsp;2026</b> · saldos de cierre</div>
+  <div class=period-badge>Serie <b>ene&nbsp;2025 – ago&nbsp;2026</b> · $ millones</div>
 </header>
 
-<div class=note><span>⚠️</span><div><b>Notas de alcance y datos.</b> Cifras en <b>$ millones</b> (los cuadros rotulan "miles de pesos", pero las magnitudes corresponden a pesos; se expresan en millones para lectura). El universo es <b>Posventa Global</b> (repuestos, taller, siniestros, accesorios) de las marcas Autocity — no incluye venta de 0&nbsp;km. <b>Abril&nbsp;2025</b> no fue informado. La facturación y el margen de <b>feb, mar y may&nbsp;2026</b> provienen de archivos preliminares ("Def") que consolidaron solo parte de las marcas, por lo que se <b>excluyen</b> de la comparación de ventas/margen (el capital de trabajo de esos meses sí es completo). La <b>Previsión por Obsolescencia</b> se tomó de la línea de resultados de los cuadros; no fue posible acceder al tablero <span class=mono>localhost:8501</span> (corre en otra máquina).</div></div>
+<div class=note><span>ℹ️</span><div><b>Alcance y datos.</b> Cifras en <b>$ millones</b>. Universo: <b>Posventa Global</b> (repuestos, taller, siniestros, accesorios) — no incluye 0&nbsp;km. Los valores <b>reales</b> se deflactan con el índice de precios de lista (promedio marcas AUTOCITY, base&nbsp;ago‑26). <b>feb/mar/may‑2026</b> tienen facturación/margen de archivos preliminares (marcas incompletas): se excluyen de ventas/margen, pero su capital de trabajo es completo. La Previsión por Obsolescencia es el cargo/reversa mensual a resultados (no el saldo). No fue posible acceder a <span class=mono>localhost:8501</span> (corre en otra máquina); la obsolescencia se tomó de los cuadros.</div></div>
 
 <div class=kpis id=kpis></div>
 
-<!-- ================= SECCIÓN 1 ================= -->
 <section>
   <div class=snum>01 — Evolución de la Previsión</div>
   <h2>Previsión por Obsolescencia · variación mes a mes</h2>
-  <p class=lead>Cargo (−) o reversa (+) mensual imputado a resultados por obsolescencia de stock, desde octubre&nbsp;2025. Son movimientos del período (no el saldo acumulado de la previsión). La barra muestra el impacto mensual; la línea, el acumulado del período.</p>
-  <div class=chartbox><canvas id=c1></canvas></div>
+  <p class=lead>Cargo (−) o reversa (+) mensual imputado a resultados por obsolescencia de stock, desde octubre&nbsp;2025. La barra es el impacto del mes; la línea, el acumulado del período.</p>
+  <div class=legend id=lg1></div>
+  <div class=chartbox id=c1></div>
   <ul class=takeaways id=t1></ul>
 </section>
 
-<!-- ================= SECCIÓN 2 ================= -->
 <section>
   <div class=snum>02 — Desglose del Capital de Trabajo</div>
   <h2>Componentes: Inventario, Créditos, Deudas y Otros</h2>
-  <p class=lead>Apertura del capital de trabajo por componente. Se cumple la identidad <span class=mono>Bienes de cambio + Créditos por ventas − Deudas comerciales + Otros = Capital de trabajo total</span> en todos los meses.</p>
+  <p class=lead>Apertura por componente (nominal). Se cumple la identidad <span class=mono>Bienes de cambio + Créditos − Deudas comerciales + Otros = Capital de trabajo</span>.</p>
   <div class=grid2>
-    <div><div class=legend-inline>Evolución apilada de componentes ($ millones)</div><div class=chartbox sm><canvas id=c2a></canvas></div></div>
-    <div><div class=legend-inline>Crecimiento por componente · oct&nbsp;2025 → ago&nbsp;2026</div><div class=chartbox sm><canvas id=c2b></canvas></div></div>
+    <div><div class=legend id=lg2a></div><div class=chartbox sm id=c2a></div></div>
+    <div><div class=legend id=lg2b></div><div class=chartbox sm id=c2b></div></div>
   </div>
   <ul class=takeaways id=t2></ul>
 </section>
 
-<!-- ================= SECCIÓN 3 ================= -->
 <section>
-  <div class=snum>03 — Capital de Trabajo vs. Facturación y Margen Bruto</div>
-  <h2>¿La expansión acompañó a las ventas y la rentabilidad?</h2>
-  <p class=lead>Evolución en base&nbsp;100 (oct&nbsp;2025) del capital de trabajo, la facturación y el margen bruto, usando solo los meses con facturación completa. A la derecha, los meses de stock (Inventario ÷ Facturación mensual): cuánto crece el capital inmovilizado por peso vendido.</p>
+  <div class=snum>03 — Capital de Trabajo vs. Facturación y Margen (real)</div>
+  <h2>¿Acompañó la expansión a las ventas y la rentabilidad?</h2>
+  <p class=lead>Primero, el capital de trabajo nominal vs. real: la brecha es pura inflación de precios. Luego, en términos <b>reales</b> y en base&nbsp;100 (oct‑25), la evolución del capital frente a la facturación y el margen (meses comparables).</p>
   <div class=grid2>
-    <div><div class=legend-inline>Índice base 100 = oct&nbsp;2025 (meses comparables)</div><div class=chartbox sm><canvas id=c3a></canvas></div></div>
-    <div><div class=legend-inline>Meses de stock y margen bruto&nbsp;%</div><div class=chartbox sm><canvas id=c3b></canvas></div></div>
+    <div><div class=legend id=lg3a></div><div class=chartbox sm id=c3a></div></div>
+    <div><div class=legend id=lg3b></div><div class=chartbox sm id=c3b></div></div>
   </div>
+  <div class=legend id=lg3c style="margin-top:14px"></div>
+  <div class=chartbox sm id=c3c></div>
   <div class=scroll><table id=tbl3></table></div>
   <ul class=takeaways id=t3></ul>
 </section>
 
-<!-- ================= SECCIÓN 4 ================= -->
 <section>
   <div class=snum>04 — Conclusión y Diagnóstico Financiero</div>
   <h2>¿Fue eficiente la expansión del capital de trabajo?</h2>
@@ -131,35 +132,29 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 </section>
 
 <footer id=foot></footer>
-
 </div>
 <script>
-// Red de seguridad: si el CDN de Chart.js no cargó, se omiten los gráficos
-// pero el análisis (indicadores, tablas y diagnóstico) se muestra igual.
-if(typeof Chart==="undefined"){
-  window.Chart=function(){return{destroy:function(){}}};
-  Chart.defaults={font:{},};
-}
-// ---- Datos: $ millones (saldos de cierre). comp=true => facturación/margen comparable ----
 const RAW=[
- {m:"2025-03",wc:6548,inv:6001,cxc:2751,cxp:-2478,otros:275,obsol:-3,resn:261,vta:3096,mg:1080,comp:true},
- {m:"2025-04",wc:null,inv:null,cxc:null,cxp:null,otros:null,obsol:null,resn:null,vta:null,mg:null,comp:false},
- {m:"2025-05",wc:8398,inv:6983,cxc:2643,cxp:-1994,otros:767,obsol:-66,resn:571,vta:3947,mg:1388,comp:true},
- {m:"2025-06",wc:8955,inv:7242,cxc:2969,cxp:-2194,otros:938,obsol:-22,resn:635,vta:3658,mg:1380,comp:true},
- {m:"2025-07",wc:7869,inv:7552,cxc:3111,cxp:-4036,otros:1242,obsol:-32,resn:551,vta:4803,mg:1578,comp:true},
- {m:"2025-08",wc:7762,inv:7579,cxc:3306,cxp:-4483,otros:1360,obsol:-81,resn:499,vta:4167,mg:1382,comp:true},
- {m:"2025-09",wc:7984,inv:8269,cxc:3161,cxp:-5077,otros:1630,obsol:-205,resn:733,vta:4407,mg:1546,comp:true},
- {m:"2025-10",wc:9385,inv:9309,cxc:2957,cxp:-4301,otros:1420,obsol:-83,resn:814,vta:4331,mg:1772,comp:true},
- {m:"2025-11",wc:10192,inv:9468,cxc:2698,cxp:-3255,otros:1281,obsol:-277,resn:408,vta:3869,mg:1382,comp:true},
- {m:"2025-12",wc:10844,inv:9497,cxc:2693,cxp:-2518,otros:1172,obsol:-125,resn:118,vta:4414,mg:1611,comp:true},
- {m:"2026-01",wc:9769,inv:9992,cxc:3181,cxp:-4860,otros:1456,obsol:-251,resn:521,vta:5104,mg:1651,comp:true},
- {m:"2026-02",wc:10124,inv:10070,cxc:3665,cxp:-5124,otros:1512,obsol:147,resn:338,vta:null,mg:null,comp:false},
- {m:"2026-03",wc:10479,inv:10364,cxc:3241,cxp:-4706,otros:1579,obsol:-42,resn:973,vta:null,mg:null,comp:false},
- {m:"2026-04",wc:11189,inv:11246,cxc:3644,cxp:-4806,otros:1106,obsol:-41,resn:757,vta:4421,mg:1769,comp:true},
- {m:"2026-05",wc:11995,inv:11510,cxc:3460,cxp:-4235,otros:1260,obsol:126,resn:586,vta:null,mg:null,comp:false},
- {m:"2026-06",wc:12687,inv:11837,cxc:3750,cxp:-4355,otros:1456,obsol:5,resn:587,vta:4860,mg:1768,comp:true},
- {m:"2026-07",wc:12367,inv:12017,cxc:4052,cxp:-4960,otros:1258,obsol:93,resn:935,vta:4733,mg:1868,comp:true},
- {m:"2026-08",wc:13962,inv:13638,cxc:3681,cxp:-4683,otros:1326,obsol:-216,resn:485,vta:4523,mg:1896,comp:true},
+ {m:'2025-01',wc:5625,inv:5481,cxc:2430,cxp:-2550,otros:264,obsol:null,resn:null,vta:3624,mg:1310,idx:1.023,wcreal:8556,vtareal:5513,mgreal:1993,comp:true},
+ {m:'2025-02',wc:5817,inv:5296,cxc:2836,cxp:-2590,otros:275,obsol:null,resn:null,vta:3097,mg:1091,idx:1.028,wcreal:8804,vtareal:4687,mgreal:1651,comp:true},
+ {m:'2025-03',wc:6548,inv:6001,cxc:2751,cxp:-2478,otros:275,obsol:-3,resn:261,vta:3096,mg:1080,idx:1.052,wcreal:9718,vtareal:4579,mgreal:1597,comp:true},
+ {m:'2025-04',wc:7036,inv:6181,cxc:2334,cxp:-2250,otros:771,obsol:null,resn:null,vta:3637,mg:1311,idx:1.063,wcreal:10299,vtareal:5324,mgreal:1918,comp:true},
+ {m:'2025-05',wc:8398,inv:6983,cxc:2643,cxp:-1994,otros:767,obsol:-66,resn:571,vta:3947,mg:1388,idx:1.09,wcreal:12030,vtareal:5635,mgreal:1982,comp:true},
+ {m:'2025-06',wc:8955,inv:7242,cxc:2969,cxp:-2194,otros:938,obsol:-22,resn:635,vta:3658,mg:1380,idx:1.126,wcreal:12405,vtareal:5054,mgreal:1907,comp:true},
+ {m:'2025-07',wc:7869,inv:7552,cxc:3111,cxp:-4036,otros:1242,obsol:-32,resn:551,vta:4803,mg:1578,idx:1.154,wcreal:10717,vtareal:6476,mgreal:2127,comp:true},
+ {m:'2025-08',wc:7762,inv:7579,cxc:3306,cxp:-4483,otros:1360,obsol:-81,resn:499,vta:4167,mg:1382,idx:1.211,wcreal:10094,vtareal:5354,mgreal:1776,comp:true},
+ {m:'2025-09',wc:7984,inv:8269,cxc:3161,cxp:-5077,otros:1630,obsol:-205,resn:733,vta:4407,mg:1546,idx:1.284,wcreal:9786,vtareal:5340,mgreal:1874,comp:true},
+ {m:'2025-10',wc:9385,inv:9309,cxc:2957,cxp:-4301,otros:1420,obsol:-83,resn:814,vta:4331,mg:1772,idx:1.328,wcreal:11046,vtareal:5075,mgreal:2077,comp:true},
+ {m:'2025-11',wc:10192,inv:9468,cxc:2698,cxp:-3255,otros:1281,obsol:-277,resn:408,vta:3869,mg:1382,idx:1.384,wcreal:11494,vtareal:4350,mgreal:1553,comp:true},
+ {m:'2025-12',wc:10844,inv:9497,cxc:2693,cxp:-2518,otros:1172,obsol:-125,resn:118,vta:4414,mg:1611,idx:1.401,wcreal:12087,vtareal:4902,mgreal:1789,comp:true},
+ {m:'2026-01',wc:9769,inv:9992,cxc:3181,cxp:-4860,otros:1456,obsol:-251,resn:521,vta:5104,mg:1651,idx:1.431,wcreal:10661,vtareal:5550,mgreal:1795,comp:true},
+ {m:'2026-02',wc:10124,inv:10070,cxc:3665,cxp:-5124,otros:1512,obsol:147,resn:338,vta:null,mg:null,idx:1.452,wcreal:10898,vtareal:null,mgreal:null,comp:false},
+ {m:'2026-03',wc:10479,inv:10364,cxc:3241,cxp:-4706,otros:1579,obsol:-42,resn:973,vta:null,mg:null,idx:1.459,wcreal:11218,vtareal:null,mgreal:null,comp:false},
+ {m:'2026-04',wc:11189,inv:11246,cxc:3644,cxp:-4806,otros:1106,obsol:-41,resn:757,vta:4421,mg:1769,idx:1.464,wcreal:11915,vtareal:4698,mgreal:1880,comp:true},
+ {m:'2026-05',wc:11995,inv:11510,cxc:3460,cxp:-4235,otros:1260,obsol:126,resn:586,vta:null,mg:null,idx:1.475,wcreal:12670,vtareal:null,mgreal:null,comp:false},
+ {m:'2026-06',wc:12687,inv:11837,cxc:3750,cxp:-4355,otros:1456,obsol:5,resn:587,vta:4860,mg:1768,idx:1.488,wcreal:13275,vtareal:5082,mgreal:1849,comp:true},
+ {m:'2026-07',wc:12367,inv:12017,cxc:4052,cxp:-4960,otros:1258,obsol:93,resn:935,vta:4733,mg:1868,idx:1.533,wcreal:12553,vtareal:4804,mgreal:1896,comp:true},
+ {m:'2026-08',wc:13962,inv:13638,cxc:3681,cxp:-4683,otros:1326,obsol:-216,resn:485,vta:4523,mg:1896,idx:1.556,wcreal:13962,vtareal:4523,mgreal:1896,comp:true},
 ];
 const ML=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const lbl=m=>{const[y,mo]=m.split("-");return ML[+mo-1]+" '"+y.slice(2);};
@@ -167,157 +162,196 @@ const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim
 const money=v=>v==null?"n/d":(v<0?"-$":"$")+Math.abs(v).toLocaleString("es-AR");
 const pct=(a,b)=>b?((a/b-1)*100):null;
 const fpct=v=>v==null?"n/d":(v>=0?"+":"")+v.toFixed(1)+"%";
+const WIN=RAW.filter(r=>r.m>="2025-10");
+const base=RAW.find(r=>r.m=="2025-10"), end=RAW.find(r=>r.m=="2026-08");
 
-const WIN=RAW.filter(r=>r.m>="2025-10"); // oct 2025 en adelante
-const base=RAW.find(r=>r.m=="2025-10");
-const end=RAW.find(r=>r.m=="2026-08");
+/* ---------- SVG mini-lib (sin dependencias) ---------- */
+const NS="http://www.w3.org/2000/svg";
+function E(t,a,kids){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(kids||[]).forEach(c=>e.appendChild(c));return e;}
+function TX(x,y,s,a){const e=E("text",Object.assign({x,y},a));e.textContent=s;return e;}
+function dims(host){const w=host.clientWidth||520,h=host.clientHeight||300;return{w,h};}
+function niceScale(min,max,n){n=n||5;if(min===max){max=min+1;}let span=max-min,step=Math.pow(10,Math.floor(Math.log10(span/n)));let err=(span/n)/step;if(err>=7.5)step*=10;else if(err>=3.5)step*=5;else if(err>=1.5)step*=2;let mn=Math.floor(min/step)*step,mx=Math.ceil(max/step)*step,t=[];for(let v=mn;v<=mx+step*1e-6;v+=step)t.push(+(v.toFixed(6)));return{min:mn,max:mx,ticks:t};}
+function legend(host,items){host.innerHTML=items.map(i=>`<span><i class="${i.line?'ln':''}" style="background:${i.c}"></i>${i.t}</span>`).join("");}
+function xlabels(n){const skip=Math.ceil(n/9);return i=>i%skip===0||i===n-1;}
+function axes(svg,P,yc,{ticks,fmt,x2=null}){ // gridlines + y ticks
+  yc.ticks.forEach(tv=>{const y=yc.Y(tv);
+    svg.appendChild(E("line",{x1:P.l,y1:y,x2:P.w-P.r,y2:y,stroke:css("--line"),"stroke-width":tv===0?1.4:1}));
+    svg.appendChild(TX(P.l-7,y+3,fmt(tv),{"text-anchor":"end",fill:css("--slate"),"font-size":10,"font-family":"IBM Plex Mono"}));});
+  if(x2){yc.t2.ticks.forEach(tv=>{svg.appendChild(TX(P.w-P.r+7,yc.Y2(tv)+3,x2(tv),{"text-anchor":"start",fill:css("--slate"),"font-size":10,"font-family":"IBM Plex Mono"}));});}
+}
+function cats(svg,P,labels){const n=labels.length,bw=(P.w-P.l-P.r)/n,show=xlabels(n);
+  const cx=i=>P.l+bw*(i+0.5);
+  labels.forEach((L,i)=>{if(show(i))svg.appendChild(TX(cx(i),P.h-P.b+15,L,{"text-anchor":"middle",fill:css("--slate"),"font-size":10,"font-family":"IBM Plex Mono"}));});
+  return{bw,cx};}
 
-// ---------- KPIs ----------
+function comboChart(host,cfg){ // bars (per cat, by sign color or fixed) + lines, optional dual axis
+  host.innerHTML="";const{w,h}=dims(host);const P={l:48,r:cfg.y2?46:14,t:10,b:24,w,h};
+  const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
+  const labels=cfg.labels;const{bw,cx}=cats(svg,P,labels);
+  // y1 scale
+  let vals=[];(cfg.bars||[]).forEach(b=>vals.push(...b.data.filter(v=>v!=null)));(cfg.lines||[]).filter(l=>!l.axis2).forEach(l=>vals.push(...l.data.filter(v=>v!=null)));
+  if(cfg.y1min!=null)vals.push(cfg.y1min);if(cfg.y1max!=null)vals.push(cfg.y1max);
+  const s1=niceScale(Math.min(0,...vals),Math.max(0,...vals),5);
+  const Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
+  let yc={ticks:s1.ticks,Y};
+  // y2
+  let Y2=null;if(cfg.y2){const v2=[];cfg.lines.filter(l=>l.axis2).forEach(l=>v2.push(...l.data.filter(v=>v!=null)));const s2=niceScale(0,Math.max(...v2),5);Y2=v=>P.t+(P.h-P.t-P.b)*(1-(v-s2.min)/(s2.max-s2.min));yc.Y2=Y2;yc.t2=s2;}
+  axes(svg,P,yc,{ticks:s1.ticks,fmt:cfg.yfmt||(v=>v),x2:cfg.y2fmt});
+  // bars
+  (cfg.bars||[]).forEach(b=>{b.data.forEach((v,i)=>{if(v==null)return;const x=cx(i)-bw*0.3,bwid=bw*0.6;const y0=Y(0),y1=Y(v);const col=b.color?b.color:(v>=0?css("--good"):css("--bad"));
+    const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:col,rx:3});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]}: ${(cfg.tip||(x=>x))(v)}`;svg.appendChild(rc);});});
+  // lines
+  (cfg.lines||[]).forEach(l=>{const yf=l.axis2?Y2:Y;let d="";l.data.forEach((v,i)=>{if(v==null){d+="";return;}d+=(d&&!d.endsWith("M")?"L":"M")+cx(i)+" "+yf(v)+" ";});
+    svg.appendChild(E("path",{d,fill:"none",stroke:l.color,"stroke-width":l.w||2.5,"stroke-dasharray":l.dash||"","stroke-linejoin":"round"}));
+    l.data.forEach((v,i)=>{if(v==null)return;const p=E("circle",{cx:cx(i),cy:yf(v),r:l.r||2.6,fill:l.color});p.appendChild(E("title",{},[]));p.lastChild.textContent=`${labels[i]}: ${(l.tip||cfg.tip||(x=>x))(v)}`;svg.appendChild(p);});});
+  host.appendChild(svg);
+}
+function stackedChart(host,cfg){
+  host.innerHTML="";const{w,h}=dims(host);const P={l:50,r:14,t:10,b:24,w,h};
+  const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
+  const labels=cfg.labels,n=labels.length;const{bw,cx}=cats(svg,P,labels);
+  let mn=0,mx=0;labels.forEach((_,i)=>{let p=0,ng=0;cfg.series.forEach(s=>{const v=s.data[i]||0;if(v>=0)p+=v;else ng+=v;});mx=Math.max(mx,p);mn=Math.min(mn,ng);});
+  const s1=niceScale(mn,mx,5),Y=v=>P.t+(P.h-P.t-P.b)*(1-(v-s1.min)/(s1.max-s1.min));
+  axes(svg,P,{ticks:s1.ticks,Y},{ticks:s1.ticks,fmt:cfg.yfmt});
+  labels.forEach((_,i)=>{let accP=0,accN=0;cfg.series.forEach(s=>{const v=s.data[i];if(v==null)return;const x=cx(i)-bw*0.32,bwid=bw*0.64;let y0,y1;if(v>=0){y0=Y(accP);y1=Y(accP+v);accP+=v;}else{y0=Y(accN);y1=Y(accN+v);accN+=v;}
+    const rc=E("rect",{x,y:Math.min(y0,y1),width:bwid,height:Math.abs(y1-y0)||1,fill:s.color});rc.appendChild(E("title",{},[]));rc.lastChild.textContent=`${labels[i]} · ${s.name}: ${money(v)} M`;svg.appendChild(rc);});});
+  host.appendChild(svg);
+}
+function hbarChart(host,items,fmt){
+  host.innerHTML="";const{w,h}=dims(host);const P={l:150,r:40,t:8,b:8,w,h};
+  const svg=E("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none"});
+  const vals=items.map(i=>i.value);const s=niceScale(Math.min(0,...vals),Math.max(0,...vals),5);
+  const X=v=>P.l+(P.w-P.l-P.r)*((v-s.min)/(s.max-s.min));
+  s.ticks.forEach(tv=>{svg.appendChild(E("line",{x1:X(tv),y1:P.t,x2:X(tv),y2:P.h-P.b,stroke:css("--line"),"stroke-width":tv===0?1.4:1}));svg.appendChild(TX(X(tv),P.h-P.b+12,fmt(tv),{"text-anchor":"middle",fill:css("--slate"),"font-size":10,"font-family":"IBM Plex Mono"}));});
+  const n=items.length,bh=(P.h-P.t-P.b)/n;
+  items.forEach((it,i)=>{const cy=P.t+bh*(i+0.5),x0=X(0),x1=X(it.value);
+    svg.appendChild(E("rect",{x:Math.min(x0,x1),y:cy-bh*0.3,width:Math.abs(x1-x0)||1,height:bh*0.6,fill:it.color,rx:3}));
+    svg.appendChild(TX(P.l-8,cy+4,it.label,{"text-anchor":"end",fill:css("--ink"),"font-size":11}));
+    svg.appendChild(TX(x1+(it.value>=0?5:-5),cy+4,fmt(it.value),{"text-anchor":it.value>=0?"start":"end",fill:css("--slate"),"font-size":10,"font-family":"IBM Plex Mono"}));});
+  host.appendChild(svg);
+}
+
+/* ---------- KPIs ---------- */
 (function(){
-  const comps=WIN.filter(r=>r.comp);
-  const cEnd=comps[comps.length-1], cStart=comps[0];
-  const kpis=[
-    {lbl:"Capital de trabajo",val:money(end.wc)+" M",d:fpct(pct(end.wc,base.wc)),cls:"down",sfx:" vs oct '25"},
-    {lbl:"Facturación",val:money(cEnd.vta)+" M",d:fpct(pct(cEnd.vta,cStart.vta)),cls:pct(cEnd.vta,cStart.vta)>=0?"up":"down",sfx:" vs oct '25"},
-    {lbl:"Margen bruto",val:money(cEnd.mg)+" M",d:fpct(pct(cEnd.mg,cStart.mg)),cls:pct(cEnd.mg,cStart.mg)>=0?"up":"down",sfx:" vs oct '25"},
-    {lbl:"Meses de stock",val:(end.inv/cEnd.vta).toFixed(2),d:"desde "+(base.inv/cStart.vta).toFixed(2)+" meses",cls:"warnc",sfx:""},
-    {lbl:"Inventario / CT",val:(end.inv/end.wc*100).toFixed(0)+"%",d:"del capital de trabajo",cls:"warnc",sfx:""},
+  const C=WIN.filter(r=>r.comp),c0=C[0],c1=C[C.length-1];
+  const k=[
+    {lbl:"Cap. de trabajo (nominal)",val:money(end.wc)+" M",d:fpct(pct(end.wc,base.wc))+" vs oct '25",cls:"down"},
+    {lbl:"Cap. de trabajo (real)",val:money(end.wcreal)+" M",d:fpct(pct(end.wcreal,base.wcreal))+" real",cls:"down"},
+    {lbl:"Facturación (real)",val:money(c1.vtareal)+" M",d:fpct(pct(c1.vtareal,c0.vtareal))+" real",cls:pct(c1.vtareal,c0.vtareal)>=0?"up":"down"},
+    {lbl:"Margen bruto (real)",val:money(c1.mgreal)+" M",d:fpct(pct(c1.mgreal,c0.mgreal))+" real",cls:pct(c1.mgreal,c0.mgreal)>=0?"up":"down"},
+    {lbl:"Meses de stock",val:(end.inv/c1.vta).toFixed(2),d:"desde "+(base.inv/c0.vta).toFixed(2)+" (oct '25)",cls:"warnc"},
   ];
-  document.getElementById("kpis").innerHTML=kpis.map(k=>
-    `<div class=kpi><div class=lbl>${k.lbl}</div><div class="val mono">${k.val}</div><div class="delta ${k.cls}">${k.d}<span style="color:var(--slate-soft);font-weight:400">${k.sfx}</span></div></div>`).join("");
+  kpis.innerHTML=k.map(x=>`<div class=kpi><div class=lbl>${x.lbl}</div><div class="val mono">${x.val}</div><div class="delta ${x.cls}">${x.d}</div></div>`).join("");
 })();
 
-const GRID=()=>({color:css("--line")}), TICK=()=>({color:css("--slate"),font:{family:"IBM Plex Mono",size:11}});
-Chart.defaults.font.family="IBM Plex Sans"; Chart.defaults.color=css("--slate");
-
-// ---------- C1: obsolescencia ----------
+/* ---------- S1 obsolescencia ---------- */
 (function(){
-  let acc=0; const cum=WIN.map(r=>acc+=r.obsol);
-  new Chart(c1,{data:{labels:WIN.map(r=>lbl(r.m)),datasets:[
-    {type:"bar",label:"Cargo/reversa del mes",data:WIN.map(r=>r.obsol),
-      backgroundColor:WIN.map(r=>r.obsol>=0?css("--good"):css("--bad")),borderRadius:4,order:2},
-    {type:"line",label:"Acumulado del período",data:cum,borderColor:css("--accent"),backgroundColor:"transparent",
-      borderWidth:2,tension:.3,pointRadius:3,pointBackgroundColor:css("--accent"),order:1}
-  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:12}}},
-    tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.raw)+" M"}}},
-    scales:{x:{grid:{display:false},ticks:TICK()},y:{grid:GRID(),ticks:{...TICK(),callback:v=>"$"+v}}}}});
+  let acc=0;const cum=WIN.map(r=>acc+=r.obsol);
+  legend(lg1,[{t:"Cargo/reversa del mes",c:css("--slate")},{t:"Acumulado del período",c:css("--accent"),line:1}]);
+  comboChart(c1,{labels:WIN.map(r=>lbl(r.m)),
+    bars:[{data:WIN.map(r=>r.obsol)}],
+    lines:[{data:cum,color:css("--accent")}],
+    yfmt:v=>"$"+v,tip:v=>money(v)+" M"});
   const chg=WIN.filter(r=>r.obsol!=null);
-  const worst=chg.reduce((a,b)=>b.obsol<a.obsol?b:a);
-  const best=chg.reduce((a,b)=>b.obsol>a.obsol?b:a);
-  const net=cum[cum.length-1];
-  document.getElementById("t1").innerHTML=[
-    ["neg",`Cargo neto acumulado del período de <b>${money(net)} M</b> por obsolescencia entre oct '25 y ago '26: la previsión drena resultados de forma sostenida.`],
+  const worst=chg.reduce((a,b)=>b.obsol<a.obsol?b:a),bestv=chg.reduce((a,b)=>b.obsol>a.obsol?b:a);
+  t1.innerHTML=[
+    ["neg",`Cargo neto acumulado del período de <b>${money(cum[cum.length-1])} M</b> por obsolescencia (oct '25 → ago '26): drena resultados de forma sostenida.`],
     ["neg",`Mayor cargo en <b>${lbl(worst.m)}</b> (${money(worst.obsol)} M), seguido por ene '26 (-$251 M) y ago '26 (-$216 M).`],
-    ["pos",`Reversas en <b>${lbl(best.m)}</b> (+$${best.obsol} M) y may '26 (+$126 M) aliviaron puntualmente, pero no revierten la tendencia.`],
-    ["neu",`Alta volatilidad mensual: el cargo por obsolescencia se mueve en un rango de ~$420 M entre su peor y mejor mes, señal de stock que envejece junto con la expansión del inventario.`],
+    ["pos",`Reversas en <b>${lbl(bestv.m)}</b> (+$${bestv.obsol} M) y may '26 (+$126 M) dieron alivio puntual, sin revertir la tendencia.`],
+    ["neu",`Fuerte volatilidad mensual: señal de stock que envejece a la par de la expansión del inventario.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
-// ---------- C2a: componentes apilados ----------
+/* ---------- S2a componentes apilados ---------- */
 (function(){
-  const S=RAW.filter(r=>r.wc!=null);
-  const ds=[
-    {label:"Bienes de cambio (Inventario)",key:"inv",color:css("--k-1")},
-    {label:"Créditos por ventas",key:"cxc",color:css("--k-3")},
-    {label:"Otros",key:"otros",color:css("--k-4")},
-    {label:"Deudas comerciales",key:"cxp",color:css("--k-2")},
-  ].map(d=>({label:d.label,data:S.map(r=>r[d.key]),backgroundColor:d.color,borderRadius:3,stack:"s"}));
-  new Chart(c2a,{type:"bar",data:{labels:S.map(r=>lbl(r.m)),datasets:ds},
-    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}},
-      tooltip:{callbacks:{label:c=>c.dataset.label+": "+money(c.raw)+" M"}}},
-      scales:{x:{stacked:true,grid:{display:false},ticks:{...TICK(),maxRotation:0,autoSkip:true}},
-        y:{stacked:true,grid:GRID(),ticks:{...TICK(),callback:v=>"$"+(v/1000)+"k"}}}}});
+  legend(lg2a,[{t:"Inventario",c:css("--k-1")},{t:"Créditos x ventas",c:css("--k-3")},{t:"Otros",c:css("--k-4")},{t:"Deudas comerciales",c:css("--k-2")}]);
+  stackedChart(c2a,{labels:RAW.map(r=>lbl(r.m)),yfmt:v=>"$"+(v/1000).toFixed(0)+"k",
+    series:[{name:"Inventario",color:css("--k-1"),data:RAW.map(r=>r.inv)},
+      {name:"Créditos x ventas",color:css("--k-3"),data:RAW.map(r=>r.cxc)},
+      {name:"Otros",color:css("--k-4"),data:RAW.map(r=>r.otros)},
+      {name:"Deudas comerciales",color:css("--k-2"),data:RAW.map(r=>r.cxp)}]});
 })();
 
-// ---------- C2b: crecimiento por componente ----------
+/* ---------- S2b crecimiento por componente ---------- */
 (function(){
-  const rows=[
-    ["Capital de trabajo",pct(end.wc,base.wc)],
-    ["Inventario",pct(end.inv,base.inv)],
-    ["Créditos x ventas",pct(end.cxc,base.cxc)],
-    ["Deudas comerc. (financ.)",pct(end.cxp,base.cxp)],
-  ];
-  new Chart(c2b,{type:"bar",data:{labels:rows.map(r=>r[0]),datasets:[{
-    data:rows.map(r=>r[1]),backgroundColor:rows.map((r,i)=>i==0?css("--accent"):css("--k-1")),borderRadius:4}]},
-    options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:c=>fpct(c.raw)+" (oct '25 → ago '26)"}}},
-      scales:{x:{grid:GRID(),ticks:{...TICK(),callback:v=>v+"%"}},y:{grid:{display:false},ticks:{...TICK(),font:{size:11}}}}}});
-  document.getElementById("t2").innerHTML=[
-    ["neg",`El capital de trabajo creció <b>${fpct(pct(end.wc,base.wc))}</b> (de ${money(base.wc)} M a ${money(end.wc)} M, +${(end.wc-base.wc).toLocaleString("es-AR")} M).`],
-    ["neg",`La expansión es casi íntegramente <b>inventario</b>: Bienes de cambio ${fpct(pct(end.inv,base.inv))} y ya representa el <b>${(end.inv/end.wc*100).toFixed(0)}%</b> del capital de trabajo total.`],
-    ["neu",`Los <b>créditos por ventas</b> subieron ${fpct(pct(end.cxc,base.cxc))}, por debajo del inventario: el capital no se inmoviliza en la calle, sino en el depósito.`],
-    ["neg",`Las <b>deudas comerciales</b> (financiación de proveedores) solo crecieron ${fpct(pct(end.cxp,base.cxp))}: <b>no acompañaron</b> la compra de stock, por lo que la empresa autofinanció la acumulación con capital propio.`],
+  legend(lg2b,[{t:"Crecimiento nominal oct '25 → ago '26",c:css("--k-1")}]);
+  hbarChart(c2b,[
+    {label:"Capital de trabajo",value:pct(end.wc,base.wc),color:css("--accent")},
+    {label:"Inventario",value:pct(end.inv,base.inv),color:css("--k-1")},
+    {label:"Créditos x ventas",value:pct(end.cxc,base.cxc),color:css("--k-1")},
+    {label:"Deudas comerc. (financ.)",value:pct(end.cxp,base.cxp),color:css("--k-1")},
+  ],v=>fpct(v));
+  t2.innerHTML=[
+    ["neg",`El capital de trabajo creció <b>${fpct(pct(end.wc,base.wc))}</b> nominal (de ${money(base.wc)} a ${money(end.wc)} M), casi todo <b>inventario</b> (${fpct(pct(end.inv,base.inv))}; hoy el <b>${(end.inv/end.wc*100).toFixed(0)}%</b> del total).`],
+    ["neu",`Los <b>créditos por ventas</b> subieron ${fpct(pct(end.cxc,base.cxc))}: el capital se inmoviliza más en el depósito que en la calle.`],
+    ["neg",`Las <b>deudas comerciales</b> (proveedores) solo crecieron ${fpct(pct(end.cxp,base.cxp))}: no financiaron la compra de stock; la empresa la autofinanció con capital propio.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
-// ---------- C3a: índice base 100 ----------
+/* ---------- S3a nominal vs real WC ---------- */
 (function(){
-  const C=WIN.filter(r=>r.comp);
-  const b={wc:C[0].wc,vta:C[0].vta,mg:C[0].mg};
-  const idx=(r,k)=>r[k]/b[k]*100;
-  new Chart(c3a,{type:"line",data:{labels:C.map(r=>lbl(r.m)),datasets:[
-    {label:"Capital de trabajo",data:C.map(r=>idx(r,"wc")),borderColor:css("--k-2"),backgroundColor:"transparent",borderWidth:2.5,tension:.3,pointRadius:2},
-    {label:"Facturación",data:C.map(r=>idx(r,"vta")),borderColor:css("--k-1"),backgroundColor:"transparent",borderWidth:2.5,tension:.3,pointRadius:2},
-    {label:"Margen bruto",data:C.map(r=>idx(r,"mg")),borderColor:css("--k-3"),backgroundColor:"transparent",borderWidth:2.5,tension:.3,pointRadius:2},
-  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}},
-    tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.raw.toFixed(0)}}},
-    scales:{x:{grid:{display:false},ticks:{...TICK(),maxRotation:0,autoSkip:true}},
-      y:{grid:GRID(),ticks:{...TICK()},title:{display:true,text:"base 100 = oct '25",color:css("--slate-soft"),font:{size:10}}}}}});
+  legend(lg3a,[{t:"Capital de trabajo nominal",c:css("--k-2"),line:1},{t:"Capital de trabajo real (ago‑26)",c:css("--accent"),line:1}]);
+  comboChart(c3a,{labels:RAW.map(r=>lbl(r.m)),
+    lines:[{data:RAW.map(r=>r.wc),color:css("--k-2")},{data:RAW.map(r=>r.wcreal),color:css("--accent")}],
+    yfmt:v=>"$"+(v/1000).toFixed(0)+"k",tip:v=>money(v)+" M"});
 })();
 
-// ---------- C3b: meses de stock + margen % ----------
+/* ---------- S3b meses de stock + margen % ---------- */
 (function(){
   const C=WIN.filter(r=>r.comp);
-  new Chart(c3b,{data:{labels:C.map(r=>lbl(r.m)),datasets:[
-    {type:"bar",label:"Meses de stock (Inv ÷ Fact.)",data:C.map(r=>r.inv/r.vta),backgroundColor:css("--k-4"),borderRadius:4,yAxisID:"y"},
-    {type:"line",label:"Margen bruto %",data:C.map(r=>r.mg/r.vta*100),borderColor:css("--k-3"),backgroundColor:"transparent",borderWidth:2.5,tension:.3,pointRadius:3,yAxisID:"y1"},
-  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}},
-    tooltip:{callbacks:{label:c=>c.dataset.label+": "+(c.dataset.yAxisID=="y1"?c.raw.toFixed(1)+"%":c.raw.toFixed(2))}}},
-    scales:{x:{grid:{display:false},ticks:{...TICK(),maxRotation:0,autoSkip:true}},
-      y:{position:"left",grid:GRID(),ticks:{...TICK()},title:{display:true,text:"meses",color:css("--slate-soft"),font:{size:10}}},
-      y1:{position:"right",grid:{display:false},ticks:{...TICK(),callback:v=>v+"%"},min:0,max:60}}}});
+  legend(lg3b,[{t:"Meses de stock",c:css("--k-4")},{t:"Margen bruto %",c:css("--k-3"),line:1}]);
+  comboChart(c3b,{labels:C.map(r=>lbl(r.m)),y2:true,
+    bars:[{data:C.map(r=>r.inv/r.vta),color:css("--k-4")}],
+    lines:[{data:C.map(r=>r.mg/r.vta*100),color:css("--k-3"),axis2:true,tip:v=>v.toFixed(1)+"%"}],
+    yfmt:v=>v.toFixed(1),y2fmt:v=>v+"%",tip:v=>v.toFixed(2)+" meses"});
 })();
 
-// ---------- Tabla 3 ----------
+/* ---------- S3c indexado real base 100 ---------- */
 (function(){
-  const head=["Mes","Cap. trabajo","Facturación","Margen","Margen %","Meses stock"];
+  const C=WIN.filter(r=>r.comp),b={wc:C[0].wcreal,v:C[0].vtareal,m:C[0].mgreal};
+  legend(lg3c,[{t:"Capital de trabajo (real)",c:css("--k-2"),line:1},{t:"Facturación (real)",c:css("--k-1"),line:1},{t:"Margen bruto (real)",c:css("--k-3"),line:1},{t:"base 100 = oct '25",c:"transparent"}]);
+  comboChart(c3c,{labels:C.map(r=>lbl(r.m)),y1min:80,
+    lines:[{data:C.map(r=>r.wcreal/b.wc*100),color:css("--k-2")},
+      {data:C.map(r=>r.vtareal/b.v*100),color:css("--k-1")},
+      {data:C.map(r=>r.mgreal/b.m*100),color:css("--k-3")}],
+    yfmt:v=>v,tip:v=>v.toFixed(0)});
+})();
+
+/* ---------- tabla ---------- */
+(function(){
+  const head=["Mes","CT nom.","CT real","Fact. real","Mg real","Mg %","Meses stock"];
   let h="<thead><tr>"+head.map(x=>`<th>${x}</th>`).join("")+"</tr></thead><tbody>";
-  WIN.forEach(r=>{
-    const mp=r.comp?(r.mg/r.vta*100).toFixed(1)+"%":"—";
-    const ms=r.comp?(r.inv/r.vta).toFixed(2):"—";
-    h+=`<tr><td>${lbl(r.m)}</td><td class=mono>${money(r.wc)}</td>`+
-       (r.comp?`<td class=mono>${money(r.vta)}</td><td class=mono>${money(r.mg)}</td><td class=mono>${mp}</td><td class=mono>${ms}</td>`
-              :`<td class=nc colspan=4>archivo preliminar · no comparable</td>`)+`</tr>`;
-  });
-  document.getElementById("tbl3").innerHTML=h+"</tbody>";
-  const C=WIN.filter(r=>r.comp);const c0=C[0],c1=C[C.length-1];
-  document.getElementById("t3").innerHTML=[
-    ["neg",`<b>El capital de trabajo creció ${fpct(pct(c1.wc,c0.wc))} mientras la facturación apenas ${fpct(pct(c1.vta,c0.vta))}</b> (oct '25 → ago '26, meses comparables): la inversión en capital corre muy por delante de las ventas.`],
-    ["neu",`El <b>margen bruto</b> mejoró ${fpct(pct(c1.mg,c0.mg))} en pesos y la tasa pasó de ${(c0.mg/c0.vta*100).toFixed(1)}% a <b>${(c1.mg/c1.vta*100).toFixed(1)}%</b>: hay mejora de rentabilidad, pero insuficiente para justificar ~50% más de capital.`],
-    ["neg",`Los <b>meses de stock</b> subieron de ${(base.inv/c0.vta).toFixed(2)} a <b>${(end.inv/c1.vta).toFixed(2)}</b>: por cada peso que se vende hoy se inmoviliza bastante más inventario que hace diez meses — deterioro de rotación.`],
+  WIN.forEach(r=>{h+=`<tr><td>${lbl(r.m)}</td><td class=mono>${money(r.wc)}</td><td class=mono>${money(r.wcreal)}</td>`+
+    (r.comp?`<td class=mono>${money(r.vtareal)}</td><td class=mono>${money(r.mgreal)}</td><td class=mono>${(r.mg/r.vta*100).toFixed(1)}%</td><td class=mono>${(r.inv/r.vta).toFixed(2)}</td>`
+           :`<td class=nc colspan=4>preliminar · no comparable</td>`)+`</tr>`;});
+  tbl3.innerHTML=h+"</tbody>";
+  const C=WIN.filter(r=>r.comp),c0=C[0],c1=C[C.length-1];
+  t3.innerHTML=[
+    ["neg",`<b>En términos reales, el capital de trabajo creció ${fpct(pct(end.wcreal,base.wcreal))} mientras la facturación cayó ${fpct(pct(c1.vtareal,c0.vtareal))}</b> (oct '25 → ago '26): se inmovilizó más capital real con menos ventas reales.`],
+    ["neg",`El <b>margen bruto real</b> también retrocedió ${fpct(pct(c1.mgreal,c0.mgreal))}: la rentabilidad no sostuvo la mayor inversión.`],
+    ["neg",`Los <b>meses de stock</b> subieron de ${(base.inv/c0.vta).toFixed(2)} a <b>${(end.inv/c1.vta).toFixed(2)}</b> (indicador independiente de la inflación): deterioro claro de rotación.`],
+    ["neu",`El salto nominal (${fpct(pct(end.wc,base.wc))}) sobreestima: ~${fpct(pct(end.wc,base.wc)-pct(end.wcreal,base.wcreal))} del aumento del capital es sólo recomposición por precios.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
 
-// ---------- Veredicto ----------
+/* ---------- veredicto ---------- */
 (function(){
-  const C=WIN.filter(r=>r.comp);const c0=C[0],c1=C[C.length-1];
-  const gWC=pct(end.wc,base.wc),gV=pct(c1.vta,c0.vta),gM=pct(c1.mg,c0.mg);
-  document.getElementById("verdict").innerHTML=
-    `<h3>Diagnóstico: expansión <span class="chip b">ineficiente</span> en términos de capital</h3>
-     <p>Entre octubre 2025 y agosto 2026 el capital de trabajo creció <b>${fpct(gWC)}</b> (≈ +$${(end.wc-base.wc).toLocaleString("es-AR")} M), casi en su totalidad por acumulación de <b>inventario</b> (${fpct(pct(end.inv,base.inv))}, hoy el ${(end.inv/end.wc*100).toFixed(0)}% del capital). En el mismo lapso la <b>facturación se mantuvo prácticamente plana (${fpct(gV)})</b> y el <b>margen bruto mejoró de forma moderada (${fpct(gM)}</b> en pesos; tasa ${ (c0.mg/c0.vta*100).toFixed(0)}% → ${(c1.mg/c1.vta*100).toFixed(0)}%).</p>
-     <p style="margin-top:10px">La conclusión es que <b>el fuerte incremento del capital de trabajo NO estuvo justificado por un aumento de las ventas</b>, y solo parcialmente por la mejora de rentabilidad. La rotación se deterioró (${(base.inv/c0.vta).toFixed(2)} → ${(end.inv/c1.vta).toFixed(2)} meses de stock), la financiación de proveedores no acompañó (deudas comerciales ${fpct(pct(end.cxp,base.cxp))}) — la empresa <b>autofinanció la acumulación con capital propio</b> — y la previsión por obsolescencia acumuló un cargo neto del período, coherente con un stock que envejece. Salvo que la acumulación responda a una decisión estratégica explícita (anticipar demanda o cobertura ante faltantes/precios), el patrón es de <b>inmovilización creciente de capital con bajo retorno incremental</b>.</p>`;
-  document.getElementById("reco").innerHTML=[
-    ["Rotación de inventario","Fijar objetivo de meses de stock por marca/línea y plan de desarme del excedente; priorizar los SKUs de baja rotación que alimentan la previsión por obsolescencia."],
-    ["Financiación de proveedores","Renegociar plazos de pago (deudas comerciales) para que la compra de stock no se financie con capital propio; alinear días de pago con días de inventario."],
-    ["Exposición a obsolescencia","Revisar política de aprovisionamiento y aging de stock; el cargo neto por obsolescencia del período es una señal temprana de capital en riesgo."],
-    ["Lectura estratégica","Si la acumulación es deliberada (cobertura/importaciones), documentar el retorno esperado y la fecha de normalización; si no, es el principal foco de liberación de caja."],
+  const C=WIN.filter(r=>r.comp),c0=C[0],c1=C[C.length-1];
+  const gWCn=pct(end.wc,base.wc),gWCr=pct(end.wcreal,base.wcreal),gVr=pct(c1.vtareal,c0.vtareal),gMr=pct(c1.mgreal,c0.mgreal);
+  verdict.innerHTML=
+    `<h3>Diagnóstico: expansión <span class="chip b">ineficiente</span> del capital de trabajo</h3>
+     <p>Entre octubre 2025 y agosto 2026 el capital de trabajo creció <b>${fpct(gWCn)} nominal</b>, pero <b>${fpct(gWCr)} en términos reales</b> (descontando la inflación de precios de lista): cerca de la mitad del salto nominal es sólo recomposición por precios. Aun así, el capital real se expandió de forma significativa, impulsado casi por completo por <b>inventario</b> (${(end.inv/end.wc*100).toFixed(0)}% del total).</p>
+     <p style="margin-top:10px">En el mismo período la <b>facturación real cayó ${fpct(gVr)}</b> y el <b>margen bruto real ${fpct(gMr)}</b>. Es decir: <b>se inmovilizó más capital real mientras el negocio real se contrajo</b>. Los meses de stock subieron de ${(base.inv/c0.vta).toFixed(2)} a ${(end.inv/c1.vta).toFixed(2)} (métrica neutra a la inflación), la financiación de proveedores no acompañó (deudas comerciales ${fpct(pct(end.cxp,base.cxp))} nominal) y la previsión por obsolescencia acumuló cargo neto. La conclusión es que <b>el incremento del capital de trabajo NO estuvo justificado por un aumento de ventas, ni por mejora de rentabilidad</b>. Salvo que responda a una decisión estratégica explícita (cobertura de stock, anticipo de importaciones), el patrón es de <b>inmovilización creciente de capital con retorno decreciente</b> — negativo para la eficiencia del negocio.</p>`;
+  reco.innerHTML=[
+    ["Rotación de inventario","Objetivo de meses de stock por marca/línea y plan de desarme del excedente; foco en SKUs de baja rotación que alimentan la obsolescencia."],
+    ["Financiación de proveedores","Renegociar plazos de pago para que la compra de stock no se financie con capital propio; alinear días de pago con días de inventario."],
+    ["Mirada real, no nominal","Monitorear el capital de trabajo deflactado y los meses de stock; el crecimiento nominal en contexto inflacionario esconde el deterioro real."],
+    ["Lectura estratégica","Si la acumulación es deliberada, documentar retorno esperado y fecha de normalización; si no, es el principal foco de liberación de caja."],
   ].map(([t,d])=>`<div class=r><b>${t}.</b> ${d}</div>`).join("");
 })();
 
-document.getElementById("foot").innerHTML=
- `Fuente: Cuadros de Resultados de Operaciones Autocity (Posventa Global) y consolidado mar&nbsp;2025–ago&nbsp;2026. `+
- `Capital de trabajo, componentes y previsión por obsolescencia: hoja consolidada. Facturación y margen bruto: cuadros mensuales (columna total AUTOCITY). `+
- `Cifras expresadas en $ millones. Abril&nbsp;2025 sin dato; feb/mar/may&nbsp;2026 con facturación/margen no comparables (archivos preliminares con marcas incompletas). `+
- `Elaboración propia a partir de los archivos provistos — ${new Date().toLocaleDateString("es-AR")}.`;
+foot.innerHTML=`Fuente: consolidado Resultados de Operaciones Autocity (Posventa) mar‑2025/ago‑2026, cuadros mensuales ene‑2025/ago‑2026, y archivo de capital de trabajo deflactado + lista de precios. `+
+ `Capital de trabajo, componentes, obsolescencia y resultado: consolidado y cuadros. Facturación y margen: total AUTOCITY de cada cuadro. Deflacción: índice de precios de lista (promedio marcas), base ago‑2026. `+
+ `Cifras en $ millones. feb/mar/may‑2026 con facturación/margen no comparables (archivos preliminares). Elaboración propia — ${new Date().toLocaleDateString("es-AR")}.`;
 </script>
 </body></html>
