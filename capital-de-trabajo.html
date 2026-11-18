@@ -83,7 +83,7 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
     <h1>Evolución del Capital de Trabajo</h1>
     <p class=sub>¿La expansión del capital de trabajo estuvo justificada por más ventas y mejor margen? Análisis nominal y <b>real (deflactado por inflación de lista)</b>, con foco en octubre&nbsp;2025 → agosto&nbsp;2026.</p>
   </div>
-  <div class=period-badge>Serie <b>ene&nbsp;2025 – ago&nbsp;2026</b> · $ millones</div>
+  <div class=period-badge>Serie <b>ene&nbsp;2025 – oct&nbsp;2026</b> · $ millones</div>
 </header>
 
 <div class=note><span>ℹ️</span><div><b>Alcance y datos.</b> Cifras en <b>$ millones</b>. Universo: <b>Posventa Global</b> (repuestos, taller, siniestros, accesorios) — no incluye 0&nbsp;km. Los valores <b>reales</b> se deflactan con el índice de precios de lista (promedio marcas AUTOCITY, base&nbsp;ago‑26). <b>feb/mar/may‑2026</b> tienen facturación/margen de archivos preliminares (marcas incompletas): se excluyen de ventas/margen, pero su capital de trabajo es completo. La <b>obsolescencia</b> (sección&nbsp;1) mide la composición por antigüedad/rotación del stock de repuestos a costo (total Autocity), tomada de la planilla de aging por marca; oct‑26 es parcial (al 6/10).</div></div>
@@ -102,7 +102,7 @@ footer{color:var(--slate-soft);font-size:11.5px;margin-top:26px;line-height:1.7;
 <section>
   <div class=snum>02 — Rentabilidad por área de posventa</div>
   <h2>Áreas de posventa vs. capital de trabajo (mes a mes)</h2>
-  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), mes a mes (ene–ago 2026), comparados contra el capital de trabajo total. Bienes = repuestos + accesorios; Servicios = taller + siniestros. El capital es casi todo inventario y no se abre por área en la fuente.</p>
+  <p class=lead>Resultado y rentabilidad de cada área de posventa (global Autocity), mes a mes (ene–oct 2026), comparados contra el capital de trabajo total. Bienes = repuestos + accesorios; Servicios = taller + siniestros. El capital es casi todo inventario y no se abre por área en la fuente.</p>
   <div style="font-size:12px;color:var(--slate);margin:2px 0 6px">Resultado por área ($ millones) · <b>línea negra = capital de trabajo total</b> (eje derecho)</div>
   <div class=legend id=lg5></div>
   <div class=chartbox id=c5a></div>
@@ -308,10 +308,10 @@ function hbarChart(host,items,fmt){
 
 /* ---------- S2 áreas de posventa vs capital de trabajo (mes a mes) ---------- */
 (function(){
-  const L=["ene '26","feb '26","mar '26","abr '26","may '26","jun '26","jul '26","ago '26"];
+  const L=["ene '26","feb '26","mar '26","abr '26","may '26","jun '26","jul '26","ago '26","sep '26","oct '26"];
   // Bienes = Rep CBA + Rep interior + Accesorios ; Servicios = Taller CBA + Taller interior + Siniestros
-  const bienesRes=[242,79,334,306,123,287,308,296], servRes=[175,32,323,319,203,263,359,408], stockRes=[176,228,317,131,260,36,267,-218];
-  const CT=[9769,10124,10479,11189,11995,12687,12367,13962];       // capital de trabajo total
+  const bienesRes=[242,79,334,306,123,287,308,296,423,343], servRes=[175,32,323,319,203,263,359,408,500,410], stockRes=[176,228,317,131,260,36,267,-218,0,0];
+  const CT=[9769,10124,10479,11189,11995,12687,12367,13962,15512,15700];       // capital de trabajo total
   const totalRes=bienesRes.map((b,i)=>b+servRes[i]+stockRes[i]);    // resultado posventa (= suma de los 3 grupos)
   const cB=css("--k-1"),cS=css("--k-3"),cK=css("--k-4"),cT=css("--ink");
   legend(lg5,[{t:"Bienes (repuestos + accesorios)",c:cB},{t:"Servicios (taller + siniestros)",c:cS},{t:"Resultados de stock",c:cK},{t:"Capital de trabajo (total)",c:cT,line:1}]);
@@ -330,9 +330,9 @@ function hbarChart(host,items,fmt){
     yfmt:v=>v+"%",tip:v=>v.toFixed(2)+"%"});
   const row=(i)=>(totalRes[i]/CT[i]*100);
   t5.innerHTML=[
-    ["neg",`El <b>capital de trabajo subió de $9.769 M (ene) a $13.962 M (ago)</b> mientras el resultado de posventa se mantuvo plano: la <b>rentabilidad total sobre el capital bajó de ${row(0).toFixed(1)}% (ene) a ${row(7).toFixed(1)}% (ago)</b>, con un pico de ${row(2).toFixed(1)}% en mar.`],
-    ["neu",`Medido <b>sobre el capital de trabajo</b>, Bienes y Servicios aportan ~2–3% cada uno por mes; <b>Servicios pasó a aportar más que Bienes en jul–ago</b>.`],
-    ["neg",`Los <b>Resultados de stock</b> son muy volátiles: aportaron <b>+3,0% sobre el capital en mar</b> pero restaron <b>−1,6% en ago</b> (−$218 M), golpeando el retorno del mes.`],
+    ["neg",`El <b>capital de trabajo siguió subiendo: de $9.769 M (ene) a $15.700 M (oct)</b> mientras el resultado de posventa se mantuvo plano: la <b>rentabilidad total sobre el capital bajó de ${row(0).toFixed(1)}% (ene) a ${row(9).toFixed(1)}% (oct)</b>, con un pico de ${row(2).toFixed(1)}% en mar.`],
+    ["neu",`Medido <b>sobre el capital de trabajo</b>, Bienes y Servicios aportan ~2–3% cada uno por mes; <b>Servicios pasó a aportar más que Bienes desde julio</b> (y sigue en sep–oct).`],
+    ["neg",`Los <b>Resultados de stock</b> son muy volátiles: aportaron <b>+3,0% en mar</b> pero restaron <b>−1,6% en ago</b> (−$218 M); en sep–oct la planilla aún no los carga (0).`],
     ["neu",`El capital (inventario) está concentrado en <b>Bienes</b>; su aporte sobre el capital ronda ~2–3% mensual mientras el capital sigue creciendo: el retorno sobre el stock inmovilizado es el foco a vigilar.`],
   ].map(([c,h])=>`<li class=${c}>${h}</li>`).join("");
 })();
