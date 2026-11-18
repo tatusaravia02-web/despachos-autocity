@@ -1,0 +1,107 @@
+<!doctype html><html lang=es><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Repuestos · Sep vs Oct</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1f27;--slate:#5b6570;--slate-soft:#88919a;--paper:#eef1f4;--surface:#fff;--surface-2:#f5f7f9;--line:#dde2e8;
+--accent:#2f6690;--accent-ink:#1d4763;--good:#2f9e5c;--good-soft:#dff2e6;--warn:#b5791a;--warn-soft:#faeecb;--bad:#c04343;--bad-soft:#f9e2e2;
+--shadow:0 1px 2px rgba(26,31,39,.06),0 4px 14px rgba(26,31,39,.05);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#eef1f4;--slate:#a7b0ba;--slate-soft:#7c8590;--paper:#14181d;--surface:#1b2027;--surface-2:#20262d;--line:#2b323b;--accent:#6ba3cc;--accent-ink:#bcdcf2;--good:#4cbb7d;--good-soft:#1c3327;--warn:#d9a53f;--warn-soft:#3a2f18;--bad:#e07373;--bad-soft:#3a2222;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.35)}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:27px;letter-spacing:-.01em;margin:0 0 5px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:7px}
+.sub{color:var(--slate);font-size:13.5px;max-width:70ch;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.band{padding:11px 16px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:.02em;color:#fff}
+.band.cba{background:#2f6690}.band.int{background:#4a4e69}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);font-weight:600;background:var(--surface-2)}
+tbody tr:hover{background:var(--surface-2)}
+td.lbl{font-weight:500}
+tr.hl td{background:color-mix(in srgb,var(--accent) 7%,transparent);font-weight:600}
+tr.pct td.lbl{color:var(--slate);font-style:italic;font-weight:400}
+tr.pct td{color:var(--slate)}
+.up{color:var(--good);font-weight:600}.down{color:var(--bad);font-weight:600}.flat{color:var(--slate-soft)}
+.delta{font-size:11px}
+.diag{padding:12px 16px;font-size:12.5px;border-top:1px solid var(--line);background:var(--surface-2)}
+.diag b{color:var(--accent-ink)}
+.chip{display:inline-block;padding:1px 7px;border-radius:100px;font-size:10.5px;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.chip.g{background:var(--good-soft);color:var(--good)}.chip.b{background:var(--bad-soft);color:var(--bad)}
+.concl{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.concl h2{font-family:'Archivo';font-size:17px;margin:0 0 8px}
+.concl ul{margin:0;padding-left:18px}.concl li{margin:5px 0;font-size:13.5px}
+footer{color:var(--slate-soft);font-size:11px;margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+</style></head><body><div class=wrap>
+<div class=eyebrow>Autocity · Posventa · Repuestos · $ millones</div>
+<h1>Repuestos CBA e Interior — Septiembre vs. Octubre 2026</h1>
+<p class=sub>Cuadro de resultados comparado. En ambas unidades <b>las ventas crecieron pero el margen cayó</b>: se vendió más y más barato, y el resultado bajó. Flechas: 🟢 mejora / 🔴 empeora para el negocio.</p>
+
+<div class=grid id=cards></div>
+
+<div class=concl>
+  <h2>Conclusión — qué cambió entre septiembre y octubre</h2>
+  <ul>
+    <li><b>Mejoró:</b> el <b>volumen de ventas</b> en las dos (CBA +11,6%, Interior +3,6%). Octubre fue fuerte en facturación.</li>
+    <li><b>Empeoró (lo central):</b> el <b>margen bruto</b> se desplomó — CBA perdió <b>4,7 pts</b> (33,4%→28,7%) e Interior <b>6,6 pts</b> (31,1%→24,5%). Se vendió con menor precio/mayor costo o más bonificaciones.</li>
+    <li>Con los <b>gastos planos</b>, esa caída de margen pegó directo en el resultado: <b>CBA −14%</b> y <b>Interior −58%</b>.</li>
+    <li><b>Interior es el foco rojo:</b> queda con solo <b>3,8%</b> de resultado sobre ventas (vs 9,3% en sep). Casi no gana.</li>
+    <li>Patrón: <b>crecer sin rentabilidad</b>. El resultado cayó pese a vender más, por el deterioro de margen.</li>
+  </ul>
+</div>
+
+<footer>Fuente: Cuadros de Resultados de Operaciones VF — Septiembre y Octubre 2026 (total AUTOCITY). Costo de ventas = Ventas − Margen bruto; Gastos = Margen bruto − Resultado operativo. Elaboración propia.</footer>
+</div>
+<script>
+// datos $ millones
+const D={
+ "Repuestos CBA":{cls:"cba",sep:{ventas:2545,mg:849,ro:295},oct:{ventas:2841,mg:815,ro:255}},
+ "Repuestos Interior":{cls:"int",sep:{ventas:621,mg:193,ro:58},oct:{ventas:643,mg:158,ro:24}},
+};
+const f=v=>v.toLocaleString("es-AR");
+const money=v=>"$"+f(Math.round(v));
+function rowsFor(d){
+  const s=d.sep,o=d.oct;
+  const costoS=s.ventas-s.mg, costoO=o.ventas-o.mg;
+  const gastoS=s.mg-s.ro, gastoO=o.mg-o.ro;
+  // concepto, sepVal, octVal, fmt, goodWhenUp(true/false/null), isPct, isHl
+  return [
+   ["Ventas brutas", s.ventas,o.ventas,"$",true,false,false],
+   ["Costo de ventas", costoS,costoO,"$",false,false,false],
+   ["Margen bruto", s.mg,o.mg,"$",true,false,true],
+   ["Margen bruto %", s.mg/s.ventas*100,o.mg/o.ventas*100,"%",true,true,false],
+   ["Gastos", gastoS,gastoO,"$",false,false,false],
+   ["Resultado operativo", s.ro,o.ro,"$",true,false,true],
+   ["Resultado s/ ventas %", s.ro/s.ventas*100,o.ro/o.ventas*100,"%",true,true,false],
+  ];
+}
+function deltaCell(sv,ov,fmt,goodUp,isPct){
+  const abs=ov-sv;
+  if(isPct){const d=ov-sv;const cls=Math.abs(d)<0.05?"flat":((d>0)===goodUp?"up":"down");const ar=d>0?"▲":(d<0?"▼":"–");return `<span class="${cls}">${ar} ${(d>=0?"+":"")}${d.toFixed(1)} pts</span>`;}
+  const pc=sv?((ov/sv-1)*100):0;const cls=Math.abs(pc)<0.5?"flat":((pc>0)===goodUp?"up":"down");const ar=pc>0?"▲":(pc<0?"▼":"–");
+  return `<span class="${cls}">${ar} ${(pc>=0?"+":"")}${pc.toFixed(1)}%</span><br><span class="delta ${cls} mono">${abs>=0?"+":""}${f(Math.round(abs))}</span>`;
+}
+function val(v,fmt){return fmt==="%"?v.toFixed(1)+"%":money(v);}
+let html="";
+for(const [name,d] of Object.entries(D)){
+  const rows=rowsFor(d);
+  let body="";
+  for(const [c,sv,ov,fmt,goodUp,isPct,hl] of rows){
+    body+=`<tr class="${hl?'hl':''} ${isPct?'pct':''}"><td class=lbl>${c}</td><td class=mono>${val(sv,fmt)}</td><td class=mono>${val(ov,fmt)}</td><td>${deltaCell(sv,ov,fmt,goodUp,isPct)}</td></tr>`;
+  }
+  // diag line
+  const vUp=((d.oct.ventas/d.sep.ventas-1)*100).toFixed(1);
+  const mPts=(d.oct.mg/d.oct.ventas*100-d.sep.mg/d.sep.ventas*100).toFixed(1);
+  const rPc=((d.oct.ro/d.sep.ro-1)*100).toFixed(0);
+  html+=`<div class=card><div class="band ${d.cls}">${name.toUpperCase()}</div>
+   <table><thead><tr><th>Concepto</th><th>Sep '26</th><th>Oct '26</th><th>Variación</th></tr></thead><tbody>${body}</tbody></table>
+   <div class=diag>Ventas <span class="chip g">+${vUp}%</span> pero margen <span class="chip b">${mPts} pts</span> → resultado <span class="chip b">${rPc}%</span>. ${name==="Repuestos Interior"?"<b>Caída más severa</b>: resultado casi desaparece.":"Vendió más, pero a menor margen."}</div></div>`;
+}
+document.getElementById("cards").innerHTML=html;
+</script>
+</body></html>
